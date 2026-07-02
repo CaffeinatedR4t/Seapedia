@@ -1,7 +1,11 @@
 services:
+  # Local PostgreSQL fallback — for offline development only.
+  # Production database is Supabase (see backend/.env.example for connection string).
+  # To use locally: docker compose up -d db
+  # then set DATABASE_URL=postgres://seapedia:secret@localhost:5432/seapedia?sslmode=disable
   db:
     image: postgres:15-alpine
-    container_name: seapedia-db
+    container_name: seapedia-db-local
     restart: unless-stopped
     environment:
       POSTGRES_USER: seapedia
@@ -11,19 +15,6 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-
-  # Uncomment to run the API in Docker as well
-  # api:
-  #   build: ./backend
-  #   container_name: seapedia-api
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     DATABASE_URL: postgres://seapedia:secret@db:5432/seapedia?sslmode=disable
-  #     JWT_SECRET: change-me
-  #     GIN_MODE: release
-  #   ports:
-  #     - "8080:8080"
 
 volumes:
   pgdata:

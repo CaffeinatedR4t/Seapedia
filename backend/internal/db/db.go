@@ -13,20 +13,25 @@ import (
 // DB is the package-level GORM database handle shared across the application.
 var DB *gorm.DB
 
-// Connect opens a connection to PostgreSQL using DATABASE_URL from env,
+// Connect opens a connection to PostgreSQL (Supabase) using DATABASE_URL from env,
 // configures connection pooling, and stores the handle in db.DB.
 // It panics if the connection cannot be established — the app cannot run without a DB.
+//
+// Supabase requires sslmode=require. The DATABASE_URL must include this parameter.
+// Example: postgres://postgres:[PASSWORD]@db.[REF].supabase.co:5432/postgres?sslmode=require
 func Connect() {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		// Fallback: build DSN from individual env vars
+		// Fallback: build DSN from individual env vars (still enforces SSL for Supabase)
+		sslmode := getenv("DB_SSLMODE", "require")
 		dsn = fmt.Sprintf(
-			"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+			"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 			getenv("DB_HOST", "localhost"),
 			getenv("DB_PORT", "5432"),
-			getenv("DB_USER", "seapedia"),
-			getenv("DB_PASSWORD", "secret"),
-			getenv("DB_NAME", "seapedia"),
+			getenv("DB_USER", "postgres"),
+			getenv("DB_PASSWORD", ""),
+			getenv("DB_NAME", "postgres"),
+			sslmode,
 		)
 	}
 
@@ -48,11 +53,12 @@ func Connect() {
 	}
 
 	// Connection pool settings
-	sqlDB.SetMaxIdleConns(5)
-	sqlDB.SetMaxOpenConns(25)
+	// Supabase free tier has a limit of ~60 connections — keep pool small
+	sqlDB.SetMaxIdleConns(3)
+	sqlDB.SetMaxOpenConns(10)
 
 	DB = db
-	log.Println("Database connection established")
+	log.Println("Database connection established (Supabase PostgreSQL)")
 }
 
 // getenv returns the env var value or a default if not set.
