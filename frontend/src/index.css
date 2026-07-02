@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-sky-50 text-slate-800 font-sans antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-slate-900;
+  }
+}
+
+@layer components {
+  /* ── Buttons ─────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  .btn-sm  { @apply btn px-4 py-2 text-sm; }
+  .btn-md  { @apply btn px-6 py-2.5 text-sm; }
+  .btn-lg  { @apply btn px-8 py-3 text-base; }
+
+  .btn-primary {
+    @apply bg-sky-600 hover:bg-sky-700 text-white shadow-sm hover:shadow-ocean focus:ring-sky-500;
+  }
+  .btn-secondary {
+    @apply bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 hover:border-sky-300 shadow-sm focus:ring-sky-400;
+  }
+  .btn-outline {
+    @apply border-2 border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white focus:ring-sky-500;
+  }
+  .btn-ghost {
+    @apply text-sky-700 hover:bg-sky-100 focus:ring-sky-400;
+  }
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white shadow-sm focus:ring-red-500;
+  }
+  .btn-white {
+    @apply bg-white hover:bg-sky-50 text-sky-800 shadow-md hover:shadow-ocean-lg focus:ring-white;
+  }
+  .btn-outline-white {
+    @apply border-2 border-white/60 text-white hover:bg-white/10 focus:ring-white;
+  }
+
+  /* ── Cards ───────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-2xl shadow-card border border-sky-100/60 transition-all duration-200;
+  }
+  .card-hover {
+    @apply card hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+  .card-glass {
+    @apply bg-white/80 backdrop-blur-md rounded-2xl border border-white/40 shadow-ocean;
+  }
+
+  /* ── Form Elements ───────────────────────────── */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-sky-200 bg-white text-slate-700
+           placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400
+           focus:border-transparent transition-all duration-200 text-sm;
+  }
+  .input-field-error {
+    @apply input-field border-red-300 focus:ring-red-400;
+  }
+  .label {
+    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  }
+
+  /* ── Badges ──────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-buyer  { @apply badge bg-sky-100 text-sky-700; }
+  .badge-seller { @apply badge bg-emerald-100 text-emerald-700; }
+  .badge-driver { @apply badge bg-amber-100 text-amber-700; }
+  .badge-admin  { @apply badge bg-purple-100 text-purple-700; }
+
+  /* ── Section ─────────────────────────────────── */
+  .section {
+    @apply py-16 px-4 sm:px-6 lg:px-8;
+  }
+  .section-title {
+    @apply text-3xl font-bold text-slate-900 text-center mb-3;
+  }
+  .section-subtitle {
+    @apply text-slate-500 text-center text-lg mb-12 max-w-2xl mx-auto;
+  }
+  .container-xl {
+    @apply max-w-7xl mx-auto;
+  }
+
+  /* ── Skeleton ────────────────────────────────── */
+  .skeleton {
+    @apply animate-pulse bg-slate-200 rounded-xl;
+  }
+}
+
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-sky-50; }
+::-webkit-scrollbar-thumb { @apply bg-sky-300 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-sky-400; }
