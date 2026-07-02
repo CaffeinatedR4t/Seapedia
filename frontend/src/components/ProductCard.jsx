@@ -5,11 +5,11 @@ const formatRupiah = (price) =>
 
 /**
  * ProductCard component.
- * Props: product { id, name, description, price, stock, image, store }
+ * Props: product { id, name, description, price, stock, image_url, store }
  */
 export default function ProductCard({ product }) {
   const navigate = useNavigate()
-  const { id, name, description, price, stock, image, store } = product
+  const { id, name, description, price, stock, image_url: image, store } = product
 
   const fallbackGradients = [
     'from-sky-400 to-cyan-400',

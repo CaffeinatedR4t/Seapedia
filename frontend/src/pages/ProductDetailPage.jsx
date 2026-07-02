@@ -67,8 +67,8 @@ export default function ProductDetailPage() {
           {/* Left: Image */}
           <div>
             <div className="card overflow-hidden aspect-square">
-              {product.image ? (
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              {product.image_url ? (
+                <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
               ) : (
                 <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
                   <span className="text-8xl">🐠</span>
