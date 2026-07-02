@@ -9,36 +9,32 @@ import (
 	"github.com/joho/godotenv"
 
 	"seapedia/internal/db"
+	"seapedia/internal/router"
 )
 
 // @title           SEAPEDIA API
 // @version         1.0
-// @description     Multi-role marketplace API — COMPFEST 18 Software Engineering Academy
+// @description     Multi-role marketplace API — COMPFEST 18
 // @host            localhost:8080
 // @BasePath        /api/v1
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
 func main() {
-	// Load .env (ignore error in production where env vars are set externally)
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, reading env from system")
 	}
 
-	// Connect to PostgreSQL and run migrations
 	db.Connect()
 	db.Migrate()
 
 	r := gin.Default()
 
-	// Health-check — used by deployment platforms & CI
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "service": "seapedia-api"})
 	})
 
-	// API v1 group — routes will be registered here by each handler package
-	v1 := r.Group("/api/v1")
-	_ = v1 // placeholder until handlers are wired up
+	router.Setup(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {
