@@ -1,0 +1,33 @@
+# ─── Project-specific ────────────────────────────────────────────────────────
+CLAUDE.md
+
+# ─── Environment / secrets ───────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Go ──────────────────────────────────────────────────────────────────────
+backend/bin/
+backend/*.exe
+backend/*.test
+backend/vendor/
+backend/docs/          # swaggo auto-generated — regenerate with `swag init`
+
+# ─── Node / Frontend ─────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ─── Docker ──────────────────────────────────────────────────────────────────
+# keep docker-compose.yml tracked; ignore local override
+docker-compose.override.yml
+
+# ─── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
