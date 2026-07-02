@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: seapedia-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: seapedia
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: seapedia
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Uncomment to run the API in Docker as well
+  # api:
+  #   build: ./backend
+  #   container_name: seapedia-api
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     DATABASE_URL: postgres://seapedia:secret@db:5432/seapedia?sslmode=disable
+  #     JWT_SECRET: change-me
+  #     GIN_MODE: release
+  #   ports:
+  #     - "8080:8080"
+
+volumes:
+  pgdata:
