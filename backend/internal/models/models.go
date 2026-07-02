@@ -85,6 +85,7 @@ type Product struct {
 	Description string  `json:"description"`
 	Price       float64 `gorm:"not null"            json:"price"`
 	Stock       int     `gorm:"not null;default:0"  json:"stock"`
+	ImageURL    string  `json:"image_url,omitempty"`
 }
 
 // ─── Cart ────────────────────────────────────────────────────────────────────
