@@ -7,6 +7,7 @@ import Footer from './components/Footer'
 import LandingPage from './pages/LandingPage'
 import ProductsPage from './pages/ProductsPage'
 import ProductDetailPage from './pages/ProductDetailPage'
+import StoreDetailPage from './pages/StoreDetailPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import RoleSelectionPage from './pages/RoleSelectionPage'
@@ -14,6 +15,8 @@ import NotFoundPage from './pages/NotFoundPage'
 
 import BuyerDashboard from './pages/dashboard/BuyerDashboard'
 import SellerDashboard from './pages/dashboard/SellerDashboard'
+import StoreManagementPage from './pages/dashboard/seller/StoreManagementPage'
+import ProductManagementPage from './pages/dashboard/seller/ProductManagementPage'
 import DriverDashboard from './pages/dashboard/DriverDashboard'
 import AdminDashboard from './pages/dashboard/AdminDashboard'
 
@@ -49,6 +52,7 @@ export default function App() {
           <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
           <Route path="/products" element={<PublicLayout><ProductsPage /></PublicLayout>} />
           <Route path="/products/:id" element={<PublicLayout><ProductDetailPage /></PublicLayout>} />
+          <Route path="/stores/:id" element={<PublicLayout><StoreDetailPage /></PublicLayout>} />
 
           {/* ── Auth pages (no layout — full-screen) ───── */}
           <Route path="/login" element={<LoginPage />} />
@@ -66,6 +70,8 @@ export default function App() {
 
           <Route element={<PrivateRoute requiredRole="seller" />}>
             <Route path="/seller/dashboard" element={<DashboardLayout><SellerDashboard /></DashboardLayout>} />
+            <Route path="/seller/store" element={<DashboardLayout><StoreManagementPage /></DashboardLayout>} />
+            <Route path="/seller/products" element={<DashboardLayout><ProductManagementPage /></DashboardLayout>} />
           </Route>
 
           <Route element={<PrivateRoute requiredRole="driver" />}>
