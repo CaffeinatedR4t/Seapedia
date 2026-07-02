@@ -131,7 +131,17 @@ type Order struct {
 	VoucherID      *uint          `json:"voucher_id"`
 	PromoID        *uint          `json:"promo_id"`
 	Items          []OrderItem    `gorm:"foreignKey:OrderID"      json:"items,omitempty"`
-	StatusHistory  []OrderStatusHistory `gorm:"foreignKey:OrderID" json:"status_history,omitempty"`
+	StatusHistory  []OrderStatusHistory `gorm:"foreignKey:OrderID"      json:"status_history,omitempty"`
+}
+
+type DiscountVoucher struct {
+	gorm.Model
+	StoreID            uint
+	Store              Store  `gorm:"foreignKey:StoreID"`
+	Code               string `gorm:"uniqueIndex;size:50"`
+	DiscountPercentage float64
+	MaxDiscount        float64
+	Stock              int
 }
 
 // OrderItem is a snapshot of a product line at the time of purchase.
