@@ -57,6 +57,15 @@ func UpdateSellerOrderStatus(c *gin.Context) {
 			return err
 		}
 
+		// Create DeliveryJob
+		job := models.DeliveryJob{
+			OrderID: order.ID,
+			Status:  models.StatusMenungguPengirim,
+		}
+		if err := tx.Create(&job).Error; err != nil {
+			return err
+		}
+
 		return nil
 	})
 

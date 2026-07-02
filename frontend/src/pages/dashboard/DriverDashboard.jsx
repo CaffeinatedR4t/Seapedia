@@ -15,16 +15,19 @@ export default function DriverDashboard() {
   
   const [activeOrders, setActiveOrders] = useState([])
   const [availableOrders, setAvailableOrders] = useState([])
+  const [earnings, setEarnings] = useState({ completed_jobs: 0, total_earnings: 0 })
   const [loading, setLoading] = useState(true)
 
   const fetchData = async () => {
     try {
-      const [activeRes, availableRes] = await Promise.all([
+      const [activeRes, availableRes, earningsRes] = await Promise.all([
         client.get('/driver/orders/active'),
-        client.get('/driver/orders/available')
+        client.get('/driver/orders/available'),
+        client.get('/driver/earnings')
       ])
       setActiveOrders(activeRes.data)
       setAvailableOrders(availableRes.data)
+      setEarnings(earningsRes.data)
     } catch (err) {
       console.error(err)
     } finally {
@@ -78,11 +81,19 @@ export default function DriverDashboard() {
         
         {/* Active Deliveries */}
         <section className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-xl font-bold text-slate-800">Sedang Diantar</h2>
-            <span className="bg-amber-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">
-              {activeOrders.length}
-            </span>
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-bold text-slate-800">Sedang Diantar</h2>
+              <span className="bg-amber-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">
+                {activeOrders.length}
+              </span>
+            </div>
+            <div className="text-right bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-100">
+              <p className="text-xs font-semibold text-emerald-600 mb-0.5">Pendapatan Hari Ini</p>
+              <p className="font-bold text-emerald-700 text-sm">
+                Rp {earnings.total_earnings.toLocaleString('id-ID')}
+              </p>
+            </div>
           </div>
 
           <div className="space-y-4">

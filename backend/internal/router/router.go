@@ -71,6 +71,7 @@ func Setup(r *gin.Engine) {
 		driver.GET("/orders/active", handlers.ListActiveOrders)
 		driver.PUT("/orders/:id/pickup", handlers.PickupOrder)
 		driver.PUT("/orders/:id/finish", handlers.FinishOrder)
+		driver.GET("/earnings", handlers.DriverEarnings)
 	}
 	admin := v1.Group("/admin", middleware.AuthMiddleware(), middleware.RequireRole("admin"))
 	{

@@ -154,6 +154,8 @@ type OrderItem struct {
 	PriceAtPurchase float64 `gorm:"not null"                json:"price_at_purchase"`
 }
 
+
+
 // OrderStatusHistory is an append-only log of every status transition.
 type OrderStatusHistory struct {
 	ID        uint        `gorm:"primaryKey;autoIncrement" json:"id"`

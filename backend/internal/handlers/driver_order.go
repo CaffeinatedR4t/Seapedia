@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -12,19 +13,43 @@ import (
 )
 
 func ListAvailableOrders(c *gin.Context) {
-	var orders []models.Order
-	db.DB.Preload("Store").Where("current_status = ?", models.StatusMenungguPengirim).Order("updated_at asc").Find(&orders)
-	c.JSON(http.StatusOK, mapOrdersToJSON(orders))
+	var jobs []models.DeliveryJob
+	db.DB.Preload("Order.Store").Where("status = ?", models.StatusMenungguPengirim).Order("id asc").Find(&jobs)
+	
+	// Convert to JSON
+	res := make([]gin.H, len(jobs))
+	for i, j := range jobs {
+		res[i] = gin.H{
+			"id":              j.Order.ID, // Keep frontend using order_id
+			"created_at":      j.Order.CreatedAt,
+			"delivery_method": j.Order.DeliveryMethod,
+			"store_name":      j.Order.Store.Name,
+		}
+	}
+	if len(jobs) == 0 {
+		res = []gin.H{}
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 func ListActiveOrders(c *gin.Context) {
 	claims := middleware.GetClaims(c)
-	var orders []models.Order
-	// For simplicity, we track driver by adding DriverID to Order or checking status history?
-	// Oh, does Order model have DriverID? Let me check.
-	// If not, I will add it to the model.
-	db.DB.Preload("Store").Where("driver_id = ? AND current_status = ?", claims.UserID, models.StatusSedangDikirim).Find(&orders)
-	c.JSON(http.StatusOK, mapOrdersToJSON(orders))
+	var jobs []models.DeliveryJob
+	db.DB.Preload("Order.Store").Where("driver_id = ? AND status = ?", claims.UserID, models.StatusSedangDikirim).Find(&jobs)
+	
+	res := make([]gin.H, len(jobs))
+	for i, j := range jobs {
+		res[i] = gin.H{
+			"id":              j.Order.ID, // Keep frontend using order_id
+			"created_at":      j.Order.CreatedAt,
+			"delivery_method": j.Order.DeliveryMethod,
+			"store_name":      j.Order.Store.Name,
+		}
+	}
+	if len(jobs) == 0 {
+		res = []gin.H{}
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 func PickupOrder(c *gin.Context) {
@@ -32,22 +57,33 @@ func PickupOrder(c *gin.Context) {
 	id := c.Param("id")
 
 	err := db.DB.Transaction(func(tx *gorm.DB) error {
-		var order models.Order
-		if err := tx.First(&order, id).Error; err != nil {
+		var job models.DeliveryJob
+		if err := tx.Where("order_id = ?", id).First(&job).Error; err != nil {
 			return gorm.ErrRecordNotFound
 		}
 
-		if order.CurrentStatus != models.StatusMenungguPengirim {
+		if job.Status != models.StatusMenungguPengirim {
 			return gorm.ErrInvalidData
+		}
+
+		var order models.Order
+		if err := tx.First(&order, id).Error; err != nil {
+			return err
+		}
+
+		now := time.Now()
+		// Update job
+		job.Status = models.StatusSedangDikirim
+		job.DriverID = &claims.UserID
+		job.TakenAt = &now
+		if err := tx.Save(&job).Error; err != nil {
+			return err
 		}
 
 		// Update order
 		order.CurrentStatus = models.StatusSedangDikirim
-		// Assuming we add DriverID to order
-		if err := tx.Model(&order).Updates(map[string]interface{}{
-			"current_status": models.StatusSedangDikirim,
-			"driver_id":      claims.UserID,
-		}).Error; err != nil {
+		order.DriverID = &claims.UserID
+		if err := tx.Save(&order).Error; err != nil {
 			return err
 		}
 
@@ -77,13 +113,25 @@ func FinishOrder(c *gin.Context) {
 	id := c.Param("id")
 
 	err := db.DB.Transaction(func(tx *gorm.DB) error {
-		var order models.Order
-		if err := tx.Where("id = ? AND driver_id = ?", id, claims.UserID).First(&order).Error; err != nil {
+		var job models.DeliveryJob
+		if err := tx.Where("order_id = ? AND driver_id = ?", id, claims.UserID).First(&job).Error; err != nil {
 			return gorm.ErrRecordNotFound
 		}
 
-		if order.CurrentStatus != models.StatusSedangDikirim {
+		if job.Status != models.StatusSedangDikirim {
 			return gorm.ErrInvalidData
+		}
+
+		var order models.Order
+		if err := tx.First(&order, id).Error; err != nil {
+			return err
+		}
+
+		now := time.Now()
+		job.Status = models.StatusPesananSelesai
+		job.CompletedAt = &now
+		if err := tx.Save(&job).Error; err != nil {
+			return err
 		}
 
 		order.CurrentStatus = models.StatusPesananSelesai
@@ -110,4 +158,20 @@ func FinishOrder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "pesanan selesai"})
+}
+
+func DriverEarnings(c *gin.Context) {
+	claims := middleware.GetClaims(c)
+	var jobs []models.DeliveryJob
+	db.DB.Preload("Order").Where("driver_id = ? AND status = ?", claims.UserID, models.StatusPesananSelesai).Find(&jobs)
+	
+	totalEarnings := 0.0
+	for _, j := range jobs {
+		totalEarnings += j.Order.DeliveryFee
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"completed_jobs": len(jobs),
+		"total_earnings": totalEarnings,
+	})
 }
