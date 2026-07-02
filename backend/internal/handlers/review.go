@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"html"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -38,9 +39,9 @@ func CreateReview(c *gin.Context) {
 		return
 	}
 	review := models.AppReview{
-		ReviewerName: req.ReviewerName,
+		ReviewerName: html.EscapeString(req.ReviewerName),
 		Rating:       req.Rating,
-		Comment:      req.Comment,
+		Comment:      html.EscapeString(req.Comment),
 	}
 	if err := db.DB.Create(&review).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save review"})
