@@ -1,37 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-
-function Sidebar({ items, title }) {
-  return (
-    <aside className="w-64 min-h-screen bg-white border-r border-sky-100 flex-shrink-0">
-      <div className="p-6 border-b border-sky-100">
-        <span className="badge-buyer text-sm py-1">{title}</span>
-      </div>
-      <nav className="p-4 space-y-1">
-        {items.map(({ icon, label, to, disabled }) => (
-          disabled ? (
-            <div key={label} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 cursor-not-allowed text-sm">
-              <span>{icon}</span>{label} <span className="ml-auto text-xs">(Coming)</span>
-            </div>
-          ) : (
-            <Link key={label} to={to}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-sky-50 hover:text-sky-700 transition-colors text-sm">
-              <span>{icon}</span>{label}
-            </Link>
-          )
-        ))}
-      </nav>
-    </aside>
-  )
-}
-
-const BUYER_NAV = [
-  { icon: '📊', label: 'Dashboard', to: '/buyer/dashboard' },
-  { icon: '💰', label: 'Dompet', to: '/buyer/wallet', disabled: true },
-  { icon: '🛒', label: 'Keranjang', to: '/buyer/cart', disabled: true },
-  { icon: '📦', label: 'Pesanan', to: '/buyer/orders', disabled: true },
-  { icon: '📍', label: 'Alamat', to: '/buyer/address', disabled: true },
-]
+import BuyerSidebar from '../../components/BuyerSidebar'
 
 export default function BuyerDashboard() {
   const { user, logout, selectRole } = useAuth()
@@ -41,7 +10,7 @@ export default function BuyerDashboard() {
 
   return (
     <div className="flex min-h-[calc(100vh-64px)] bg-sky-50">
-      <Sidebar items={BUYER_NAV} title="🛒 Pembeli" />
+      <BuyerSidebar />
 
       <main className="flex-1 p-8">
         {/* Welcome */}

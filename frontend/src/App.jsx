@@ -14,9 +14,16 @@ import RoleSelectionPage from './pages/RoleSelectionPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 import BuyerDashboard from './pages/dashboard/BuyerDashboard'
+import WalletPage from './pages/dashboard/buyer/WalletPage'
+import AddressPage from './pages/dashboard/buyer/AddressPage'
+import CartPage from './pages/dashboard/buyer/CartPage'
+import OrderHistoryPage from './pages/dashboard/buyer/OrderHistoryPage'
+import OrderDetailPage from './pages/dashboard/buyer/OrderDetailPage'
+
 import SellerDashboard from './pages/dashboard/SellerDashboard'
 import StoreManagementPage from './pages/dashboard/seller/StoreManagementPage'
 import ProductManagementPage from './pages/dashboard/seller/ProductManagementPage'
+import SellerOrdersPage from './pages/dashboard/seller/SellerOrdersPage'
 import DriverDashboard from './pages/dashboard/DriverDashboard'
 import AdminDashboard from './pages/dashboard/AdminDashboard'
 
@@ -66,12 +73,18 @@ export default function App() {
           {/* ── Protected dashboards ───────────────────── */}
           <Route element={<PrivateRoute requiredRole="buyer" />}>
             <Route path="/buyer/dashboard" element={<DashboardLayout><BuyerDashboard /></DashboardLayout>} />
+            <Route path="/buyer/wallet" element={<DashboardLayout><WalletPage /></DashboardLayout>} />
+            <Route path="/buyer/address" element={<DashboardLayout><AddressPage /></DashboardLayout>} />
+            <Route path="/buyer/cart" element={<DashboardLayout><CartPage /></DashboardLayout>} />
+            <Route path="/buyer/orders" element={<DashboardLayout><OrderHistoryPage /></DashboardLayout>} />
+            <Route path="/buyer/orders/:id" element={<DashboardLayout><OrderDetailPage /></DashboardLayout>} />
           </Route>
 
           <Route element={<PrivateRoute requiredRole="seller" />}>
             <Route path="/seller/dashboard" element={<DashboardLayout><SellerDashboard /></DashboardLayout>} />
             <Route path="/seller/store" element={<DashboardLayout><StoreManagementPage /></DashboardLayout>} />
             <Route path="/seller/products" element={<DashboardLayout><ProductManagementPage /></DashboardLayout>} />
+            <Route path="/seller/orders" element={<DashboardLayout><SellerOrdersPage /></DashboardLayout>} />
           </Route>
 
           <Route element={<PrivateRoute requiredRole="driver" />}>

@@ -39,9 +39,28 @@ func Setup(r *gin.Engine) {
 		seller.POST("/products", handlers.CreateProduct)
 		seller.PUT("/products/:id", handlers.UpdateProduct)
 		seller.DELETE("/products/:id", handlers.DeleteProduct)
+
+		seller.GET("/orders", handlers.ListSellerOrders)
 	}
 	buyer := v1.Group("/buyer", middleware.AuthMiddleware(), middleware.RequireRole("buyer"))
-	_ = buyer
+	{
+		buyer.GET("/wallet", handlers.GetWallet)
+		buyer.POST("/wallet/topup", handlers.TopUpWallet)
+
+		buyer.GET("/address", handlers.ListAddresses)
+		buyer.POST("/address", handlers.CreateAddress)
+		buyer.PUT("/address/:id", handlers.UpdateAddress)
+		buyer.DELETE("/address/:id", handlers.DeleteAddress)
+
+		buyer.GET("/cart", handlers.GetCart)
+		buyer.POST("/cart", handlers.AddToCart)
+		buyer.PUT("/cart/:itemId", handlers.UpdateCartItem)
+		buyer.DELETE("/cart/:itemId", handlers.DeleteCartItem)
+
+		buyer.POST("/checkout", handlers.Checkout)
+		buyer.GET("/orders", handlers.ListBuyerOrders)
+		buyer.GET("/orders/:id", handlers.GetBuyerOrder)
+	}
 	driver := v1.Group("/driver", middleware.AuthMiddleware(), middleware.RequireRole("driver"))
 	_ = driver
 	admin := v1.Group("/admin", middleware.AuthMiddleware(), middleware.RequireRole("admin"))
