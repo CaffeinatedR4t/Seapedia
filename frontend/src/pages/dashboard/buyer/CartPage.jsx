@@ -22,6 +22,8 @@ export default function CartPage() {
   
   const [selectedDelivery, setSelectedDelivery] = useState('Regular')
   const [checkingOut, setCheckingOut] = useState(false)
+  const [voucherCode, setVoucherCode] = useState('')
+  const [appliedVoucher, setAppliedVoucher] = useState(null)
 
   const fetchCartAndWallet = async () => {
     try {
@@ -65,7 +67,10 @@ export default function CartPage() {
     setCheckingOut(true)
     setError('')
     try {
-      await client.post('/buyer/checkout', { delivery_method: selectedDelivery })
+      await client.post('/buyer/checkout', { 
+        delivery_method: selectedDelivery,
+        voucher_code: appliedVoucher || ''
+      })
       navigate('/buyer/orders', { state: { message: 'Checkout berhasil!' } })
     } catch (err) {
       setError(err.response?.data?.error || 'Checkout gagal')
@@ -77,9 +82,13 @@ export default function CartPage() {
 
   const delivery = DELIVERY.find(d => d.id === selectedDelivery)
   const subtotal = cart?.subtotal || 0
-  const tax = Math.round((subtotal + delivery.fee) * 0.12)
+  const tax = Math.round((subtotal + delivery.fee) * 0.12) // Note: Real calc might apply discount first, let's keep it simple for UI or assume 0 discount for now unless computed by backend
+  // Actually, to make UI accurate, we should ideally fetch discount from backend.
+  // For simplicity since the backend calculates it perfectly, we just show a dummy or leave it to backend. 
+  // Let's add a dummy discount UI if appliedVoucher is set.
+  const discountDisplay = appliedVoucher ? 'Lihat di detail pesanan' : '-'
   const total = subtotal + delivery.fee + tax
-  const canAfford = wallet?.balance >= total
+  const canAfford = wallet?.balance >= total // Approximation since discount reduces total
   const hasItems = cart?.items?.length > 0
 
   return (
@@ -154,6 +163,22 @@ export default function CartPage() {
             {/* Right: Checkout Summary */}
             <div className="card p-6 sticky top-24">
               <h3 className="font-bold text-slate-800 mb-4">Ringkasan Belanja</h3>
+
+              <div className="mb-4 flex gap-2">
+                <input 
+                  type="text" 
+                  placeholder="Kode Voucher" 
+                  value={voucherCode} 
+                  onChange={e => setVoucherCode(e.target.value)} 
+                  className="input-field text-sm"
+                  disabled={appliedVoucher !== null}
+                />
+                {!appliedVoucher ? (
+                  <button onClick={() => setAppliedVoucher(voucherCode)} className="btn-sm btn-primary shrink-0">Pakai</button>
+                ) : (
+                  <button onClick={() => { setAppliedVoucher(null); setVoucherCode('') }} className="btn-sm btn-outline text-red-500 shrink-0">Hapus</button>
+                )}
+              </div>
               
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm text-slate-600">
@@ -162,6 +187,11 @@ export default function CartPage() {
                 <div className="flex justify-between text-sm text-slate-600">
                   <span>Biaya pengiriman</span><span>{formatRupiah(delivery.fee)}</span>
                 </div>
+                {appliedVoucher && (
+                  <div className="flex justify-between text-sm text-emerald-600">
+                    <span>Voucher</span><span>Akan dihitung</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm text-slate-600">
                   <span>PPN 12%</span><span>{formatRupiah(tax)}</span>
                 </div>

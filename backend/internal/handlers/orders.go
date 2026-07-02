@@ -14,6 +14,7 @@ import (
 
 type CheckoutRequest struct {
 	DeliveryMethod string `json:"delivery_method" binding:"required"`
+	VoucherCode    string `json:"voucher_code"`
 }
 
 func getDeliveryFee(method models.DeliveryMethod) float64 {
@@ -70,7 +71,24 @@ func Checkout(c *gin.Context) {
 		}
 
 		deliveryFee := getDeliveryFee(method)
-		discount := 0.0 // Level 3 doesn't have promos yet
+		discount := 0.0
+
+		var voucher models.DiscountVoucher
+		if req.VoucherCode != "" {
+			if err := tx.Where("code = ? AND store_id = ?", req.VoucherCode, cart.StoreID).First(&voucher).Error; err != nil {
+				return errors.New("voucher tidak ditemukan atau tidak berlaku untuk toko ini")
+			}
+			if voucher.Stock <= 0 {
+				return errors.New("kuota voucher sudah habis")
+			}
+			// Calculate discount
+			discountCalc := subtotal * (voucher.DiscountPercentage / 100.0)
+			if discountCalc > voucher.MaxDiscount {
+				discountCalc = voucher.MaxDiscount
+			}
+			discount = discountCalc
+		}
+
 		tax := (subtotal + deliveryFee - discount) * 0.12
 		total := subtotal + deliveryFee - discount + tax
 
@@ -101,11 +119,20 @@ func Checkout(c *gin.Context) {
 			Total:          total,
 			CurrentStatus:  models.StatusSedangDikemas,
 		}
+		if req.VoucherCode != "" {
+			order.VoucherID = &voucher.ID
+		}
 
 		if err := tx.Create(&order).Error; err != nil {
 			return err
 		}
 		createdOrder = order
+
+		if req.VoucherCode != "" {
+			if err := tx.Model(&voucher).UpdateColumn("stock", gorm.Expr("stock - 1")).Error; err != nil {
+				return err
+			}
+		}
 
 		// Wallet tx
 		walletTx := models.WalletTransaction{
@@ -165,6 +192,8 @@ func Checkout(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "saldo dompet tidak mencukupi"})
 		} else if errors.Is(err, ErrNoWallet) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "dompet tidak ditemukan"})
+		} else if err.Error() == "voucher tidak ditemukan atau tidak berlaku untuk toko ini" || err.Error() == "kuota voucher sudah habis" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "gagal memproses checkout"})
 		}
