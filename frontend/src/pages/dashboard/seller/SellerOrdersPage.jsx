@@ -40,6 +40,15 @@ export default function SellerOrdersPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const handleProcessOrder = async (id) => {
+    try {
+      await client.put(`/seller/orders/${id}/status`, { status: 'Menunggu Pengirim' })
+      setOrders(orders.map(o => o.id === id ? { ...o, status: 'Menunggu Pengirim' } : o))
+    } catch (err) {
+      alert(err.response?.data?.error || 'Gagal memproses pesanan')
+    }
+  }
+
   if (loading) return <div className="flex bg-sky-50 min-h-screen"><SellerSidebar /><main className="flex-1 p-8"><LoadingSpinner /></main></div>
 
   return (
@@ -74,12 +83,17 @@ export default function SellerOrdersPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mt-4">
                   <span className="text-sm text-slate-500">
-                    Fitur proses pesanan (Level 4) akan ditambahkan di sini.
+                    {o.status === 'Sedang Dikemas' ? 'Pesanan perlu diproses.' : 'Pesanan sudah diproses.'}
                   </span>
                   {o.status === 'Sedang Dikemas' && (
-                    <button className="btn-sm btn-outline opacity-50 cursor-not-allowed">Proses Pesanan</button>
+                    <button 
+                      onClick={() => handleProcessOrder(o.id)} 
+                      className="btn-sm btn-primary bg-sky-600 hover:bg-sky-700"
+                    >
+                      Proses Pesanan
+                    </button>
                   )}
                 </div>
               </div>

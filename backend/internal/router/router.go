@@ -41,6 +41,10 @@ func Setup(r *gin.Engine) {
 		seller.DELETE("/products/:id", handlers.DeleteProduct)
 
 		seller.GET("/orders", handlers.ListSellerOrders)
+		seller.PUT("/orders/:id/status", handlers.UpdateSellerOrderStatus)
+
+		seller.GET("/vouchers", handlers.ListVouchers)
+		seller.POST("/vouchers", handlers.CreateVoucher)
 	}
 	buyer := v1.Group("/buyer", middleware.AuthMiddleware(), middleware.RequireRole("buyer"))
 	{
@@ -62,9 +66,16 @@ func Setup(r *gin.Engine) {
 		buyer.GET("/orders/:id", handlers.GetBuyerOrder)
 	}
 	driver := v1.Group("/driver", middleware.AuthMiddleware(), middleware.RequireRole("driver"))
-	_ = driver
+	{
+		driver.GET("/orders/available", handlers.ListAvailableOrders)
+		driver.GET("/orders/active", handlers.ListActiveOrders)
+		driver.PUT("/orders/:id/pickup", handlers.PickupOrder)
+		driver.PUT("/orders/:id/finish", handlers.FinishOrder)
+	}
 	admin := v1.Group("/admin", middleware.AuthMiddleware(), middleware.RequireRole("admin"))
-	_ = admin
+	{
+		admin.POST("/simulate-overdue", handlers.SimulateOverdue)
+	}
 }
 
 func corsMiddleware() gin.HandlerFunc {
