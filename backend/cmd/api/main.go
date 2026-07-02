@@ -3,9 +3,12 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
+	"seapedia/internal/db"
 )
 
 // @title           SEAPEDIA API
@@ -22,6 +25,10 @@ func main() {
 		log.Println("No .env file found, reading env from system")
 	}
 
+	// Connect to PostgreSQL and run migrations
+	db.Connect()
+	db.Migrate()
+
 	r := gin.Default()
 
 	// Health-check — used by deployment platforms & CI
@@ -33,8 +40,13 @@ func main() {
 	v1 := r.Group("/api/v1")
 	_ = v1 // placeholder until handlers are wired up
 
-	log.Println("SEAPEDIA API starting on :8080")
-	if err := r.Run(":8080"); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("SEAPEDIA API starting on :%s", port)
+	if err := r.Run(":" + port); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
 }
