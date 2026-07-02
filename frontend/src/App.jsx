@@ -26,6 +26,8 @@ import ProductManagementPage from './pages/dashboard/seller/ProductManagementPag
 import SellerOrdersPage from './pages/dashboard/seller/SellerOrdersPage'
 import DriverDashboard from './pages/dashboard/DriverDashboard'
 import AdminDashboard from './pages/dashboard/AdminDashboard'
+import AdminPromosPage from './pages/dashboard/admin/AdminPromosPage'
+import AdminSimulatePage from './pages/dashboard/admin/AdminSimulatePage'
 
 import PrivateRoute from './routes/PrivateRoute'
 
@@ -93,6 +95,8 @@ export default function App() {
 
           <Route element={<PrivateRoute requiredRole="admin" />}>
             <Route path="/admin/dashboard" element={<DashboardLayout><AdminDashboard /></DashboardLayout>} />
+            <Route path="/admin/promos" element={<DashboardLayout><AdminPromosPage /></DashboardLayout>} />
+            <Route path="/admin/simulate" element={<DashboardLayout><AdminSimulatePage /></DashboardLayout>} />
           </Route>
 
           {/* ── 404 ────────────────────────────────────── */}

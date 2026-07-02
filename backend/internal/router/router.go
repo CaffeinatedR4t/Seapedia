@@ -75,6 +75,9 @@ func Setup(r *gin.Engine) {
 	}
 	admin := v1.Group("/admin", middleware.AuthMiddleware(), middleware.RequireRole("admin"))
 	{
+		admin.GET("/stats", handlers.AdminStats)
+		admin.GET("/promos", handlers.ListPromos)
+		admin.POST("/promos", handlers.CreatePromo)
 		admin.POST("/simulate-overdue", handlers.SimulateOverdue)
 	}
 }
