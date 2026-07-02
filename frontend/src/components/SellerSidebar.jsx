@@ -4,7 +4,7 @@ const SELLER_NAV = [
   { icon: '📊', label: 'Dashboard', to: '/seller/dashboard' },
   { icon: '🏪', label: 'Toko Saya', to: '/seller/store' },
   { icon: '📦', label: 'Produk', to: '/seller/products' },
-  { icon: '🧾', label: 'Pesanan Masuk', to: '/seller/orders', disabled: true },
+  { icon: '🧾', label: 'Pesanan Masuk', to: '/seller/orders' },
   { icon: '💹', label: 'Laporan', to: '/seller/reports', disabled: true },
 ]
 
