@@ -9,7 +9,7 @@ A fullstack e-commerce marketplace platform for the COMPFEST 18 Technical Challe
 
 ## Level Claimed
 
-This submission implements Level 1 through Level 9:
+This submission implements Level 1 through Level 7:
 - Level 1: MVP Backend (CRUD, Auth)
 - Level 2: MVP Frontend (Tailwind, React)
 - Level 3: Driver Integration
@@ -17,8 +17,6 @@ This submission implements Level 1 through Level 9:
 - Level 5: Notification / Invoice (History)
 - Level 6: Advanced Logic (Single-Store Cart, PPN, SLA Simulation)
 - Level 7: API Documentation (Swagger/Postman) & Admin Dashboard
-- Level 8: Pro Max UI/UX Design System
-- Level 9: Production Deployment (Koyeb & Vercel)
 
 ## API Documentation
 
