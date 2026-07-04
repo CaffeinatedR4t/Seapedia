@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { LayoutDashboard, Ticket, Clock, Shield } from 'lucide-react'
 
 const ADMIN_NAV = [
-  { icon: '📊', label: 'Dashboard', to: '/admin/dashboard' },
-  { icon: '🎟️', label: 'Promo & Voucher', to: '/admin/promos' },
-  { icon: '⏳', label: 'Simulasi Overdue', to: '/admin/simulate' },
+  { icon: <LayoutDashboard size={20} />, label: 'Dashboard', to: '/admin/dashboard' },
+  { icon: <Ticket size={20} />, label: 'Promo & Voucher', to: '/admin/promos' },
+  { icon: <Clock size={20} />, label: 'Simulasi Overdue', to: '/admin/simulate' },
 ]
 
 export default function AdminSidebar() {
@@ -15,7 +16,7 @@ export default function AdminSidebar() {
     <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col">
       <div className="p-6 border-b border-slate-800">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <span className="text-2xl">👑</span> Admin Panel
+          <span className="text-2xl text-coral-600 mr-1"><Shield size={24} /></span> Admin Panel
         </h2>
       </div>
 

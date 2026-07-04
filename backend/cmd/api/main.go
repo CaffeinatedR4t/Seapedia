@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"seapedia/internal/db"
+	"seapedia/internal/models"
 	"seapedia/internal/router"
 )
 
@@ -26,7 +27,26 @@ func main() {
 	}
 
 	db.Connect()
-	db.Migrate()
+
+	// Auto-migrate the database schemas
+	db.DB.AutoMigrate(
+		&models.User{},
+		&models.UserRole{},
+		&models.Store{},
+		&models.Product{},
+		&models.Cart{},
+		&models.CartItem{},
+		&models.Order{},
+		&models.OrderItem{},
+		&models.OrderStatusHistory{},
+		&models.Wallet{},
+		&models.WalletTransaction{},
+		&models.Address{},
+		&models.Voucher{},
+		&models.Promo{},
+		&models.DeliveryJob{},
+		&models.AppReview{},
+	)
 
 	r := gin.Default()
 

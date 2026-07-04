@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import client from '../api/client'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ProductCard from '../components/ProductCard'
+import { Store, Palmtree } from 'lucide-react'
 
 export default function StoreDetailPage() {
   const { id } = useParams()
@@ -25,7 +26,7 @@ export default function StoreDetailPage() {
   if (error) {
     return (
       <div className="container-custom py-24 text-center">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">🏪 {error}</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center justify-center gap-2"><Store className="text-slate-400" /> {error}</h2>
         <Link to="/products" className="btn-md btn-primary">Kembali ke Belanja</Link>
       </div>
     )
@@ -38,8 +39,8 @@ export default function StoreDetailPage() {
       {/* Store Header Banner */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-500 text-white pt-24 pb-12">
         <div className="container-custom flex flex-col md:flex-row items-center gap-6">
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-5xl shadow-xl border-4 border-white">
-            🏪
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl border-4 border-white">
+            <Store size={48} className="text-emerald-500" />
           </div>
           <div className="text-center md:text-left">
             <h1 className="text-3xl font-extrabold mb-2">{store.name}</h1>
@@ -62,7 +63,7 @@ export default function StoreDetailPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-sm">
-            <span className="text-5xl mb-4 block">🏝️</span>
+            <Palmtree size={48} className="mx-auto mb-4 text-emerald-200" />
             <h3 className="text-xl font-bold text-slate-800 mb-2">Belum Ada Produk</h3>
             <p className="text-slate-500">Toko ini belum menambahkan produk apa pun.</p>
           </div>

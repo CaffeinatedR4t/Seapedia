@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import SellerSidebar from '../../../components/SellerSidebar'
 import client from '../../../api/client'
 import LoadingSpinner from '../../../components/LoadingSpinner'
+import { Receipt, Store, Inbox } from 'lucide-react'
 
 const formatRupiah = (price) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price)
@@ -49,18 +50,18 @@ export default function SellerOrdersPage() {
     }
   }
 
-  if (loading) return <div className="flex bg-sky-50 min-h-screen"><SellerSidebar /><main className="flex-1 p-8"><LoadingSpinner /></main></div>
+  if (loading) return <div className="flex bg-paper-50 min-h-screen"><SellerSidebar /><main className="flex-1 p-8"><LoadingSpinner /></main></div>
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] bg-sky-50">
+    <div className="flex min-h-[calc(100vh-64px)] bg-paper-50">
       <SellerSidebar />
       <main className="flex-1 p-8 max-w-6xl mx-auto w-full">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">🧾 Pesanan Masuk</h1>
-        <p className="text-slate-500 mb-8">Pantau dan kelola pesanan dari pembeli</p>
+        <h1 className="text-2xl font-bold text-ink-900 mb-2 flex items-center gap-2"><Receipt className="text-coral-600" /> Pesanan Masuk</h1>
+        <p className="text-ink-500 mb-8">Pantau dan kelola pesanan dari pembeli</p>
 
         {error ? (
-          <div className="card p-12 text-center text-slate-500 max-w-lg mx-auto border-dashed">
-            <span className="text-4xl block mb-4">🏪</span>
+          <div className="card p-12 text-center text-ink-500 max-w-lg mx-auto border-dashed border-paper-200">
+            <Store size={48} className="mx-auto mb-4 text-ink-400" />
             {error}
           </div>
         ) : (
@@ -90,7 +91,7 @@ export default function SellerOrdersPage() {
                   {o.status === 'Sedang Dikemas' && (
                     <button 
                       onClick={() => handleProcessOrder(o.id)} 
-                      className="btn-sm btn-primary bg-sky-600 hover:bg-sky-700"
+                      className="btn-sm btn-primary"
                     >
                       Proses Pesanan
                     </button>
@@ -99,8 +100,8 @@ export default function SellerOrdersPage() {
               </div>
             ))}
             {orders.length === 0 && (
-              <div className="card p-12 text-center text-slate-500 border-dashed">
-                <span className="text-5xl block mb-4">🏝️</span>
+              <div className="card p-12 text-center text-ink-500 border-dashed border-paper-200">
+                <Inbox size={48} className="mx-auto mb-4 text-ink-400" />
                 Belum ada pesanan masuk.
               </div>
             )}

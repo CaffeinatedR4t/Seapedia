@@ -1,18 +1,19 @@
 import { Link } from 'react-router-dom'
+import { LayoutDashboard, Wallet, ShoppingCart, Package, MapPin, ShoppingBag } from 'lucide-react'
 
 const BUYER_NAV = [
-  { icon: '📊', label: 'Dashboard', to: '/buyer/dashboard' },
-  { icon: '💰', label: 'Dompet', to: '/buyer/wallet' },
-  { icon: '🛒', label: 'Keranjang', to: '/buyer/cart' },
-  { icon: '📦', label: 'Pesanan', to: '/buyer/orders' },
-  { icon: '📍', label: 'Alamat', to: '/buyer/address' },
+  { icon: <LayoutDashboard size={20} />, label: 'Dashboard', to: '/buyer/dashboard' },
+  { icon: <Wallet size={20} />, label: 'Dompet', to: '/buyer/wallet' },
+  { icon: <ShoppingCart size={20} />, label: 'Keranjang', to: '/buyer/cart' },
+  { icon: <Package size={20} />, label: 'Pesanan', to: '/buyer/orders' },
+  { icon: <MapPin size={20} />, label: 'Alamat', to: '/buyer/address' },
 ]
 
 export default function BuyerSidebar() {
   return (
     <aside className="w-64 min-h-[calc(100vh-64px)] bg-white border-r border-sky-100 flex-shrink-0">
       <div className="p-6 border-b border-sky-100">
-        <span className="badge-buyer text-sm py-1">🛒 Pembeli</span>
+        <span className="badge-buyer text-sm py-1 inline-flex items-center gap-1"><ShoppingBag size={14} /> Pembeli</span>
       </div>
       <nav className="p-4 space-y-1">
         {BUYER_NAV.map(({ icon, label, to, disabled }) => (

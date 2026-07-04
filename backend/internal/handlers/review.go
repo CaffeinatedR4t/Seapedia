@@ -16,6 +16,10 @@ type CreateReviewRequest struct {
 	Comment      string `json:"comment" binding:"required,min=1,max=1000"`
 }
 
+// @Summary ListReviews
+// @Description ListReviews
+// @Tags review
+// @Router /api/v1/reviews [get]
 func ListReviews(c *gin.Context) {
 	var reviews []models.AppReview
 	db.DB.Order("created_at desc").Limit(50).Find(&reviews)
@@ -32,6 +36,10 @@ func ListReviews(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// @Summary CreateReview
+// @Description CreateReview
+// @Tags review
+// @Router /api/v1/reviews [post]
 func CreateReview(c *gin.Context) {
 	var req CreateReviewRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

@@ -3,10 +3,10 @@ import { useAuth } from '../context/AuthContext'
 import LoadingSpinner from '../components/LoadingSpinner'
 
 /**
- * PrivateRoute — protects routes that require authentication.
+ * PrivateRoute - protects routes that require authentication.
  *
  * Props:
- *   requiredRole (string|undefined) — if set, also enforces the active role.
+ *   requiredRole (string|undefined) - if set, also enforces the active role.
  *
  * Behavior:
  *   - Loading → show spinner

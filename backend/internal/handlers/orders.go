@@ -10,32 +10,20 @@ import (
 	"seapedia/internal/db"
 	"seapedia/internal/middleware"
 	"seapedia/internal/models"
+	"seapedia/internal/services"
 )
 
 type CheckoutRequest struct {
+	AddressID      uint   `json:"address_id" binding:"required"`
 	DeliveryMethod string `json:"delivery_method" binding:"required"`
+	DiscountCode   string `json:"discount_code"`
 	VoucherCode    string `json:"voucher_code"`
 }
 
-func getDeliveryFee(method models.DeliveryMethod) float64 {
-	switch method {
-	case models.DeliveryInstant:
-		return 15000
-	case models.DeliveryNextDay:
-		return 10000
-	case models.DeliveryRegular:
-		return 5000
-	}
-	return 5000 // fallback
-}
-
-var (
-	ErrEmptyCart      = errors.New("keranjang kosong")
-	ErrInsufficient   = errors.New("saldo tidak cukup")
-	ErrNoWallet       = errors.New("tidak ada dompet")
-	ErrStock          = errors.New("stok tidak cukup")
-)
-
+// @Summary Checkout
+// @Description Checkout
+// @Tags orders
+// @Router /api/v1/buyer/checkout [post]
 func Checkout(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var req CheckoutRequest
@@ -50,152 +38,32 @@ func Checkout(c *gin.Context) {
 		return
 	}
 
-	var createdOrder models.Order
+	var address models.Address
+	if err := db.DB.Where("id = ? AND buyer_id = ?", req.AddressID, claims.UserID).First(&address).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "alamat pengiriman tidak valid"})
+		return
+	}
 
-	err := db.DB.Transaction(func(tx *gorm.DB) error {
-		var cart models.Cart
-		if err := tx.Preload("Items.Product").Where("buyer_id = ?", claims.UserID).First(&cart).Error; err != nil {
-			return gorm.ErrRecordNotFound
-		}
+	codeToApply := req.DiscountCode
+	if codeToApply == "" {
+		codeToApply = req.VoucherCode
+	}
 
-		if len(cart.Items) == 0 || cart.StoreID == nil {
-			return ErrEmptyCart
-		}
-
-		subtotal := 0.0
-		for _, item := range cart.Items {
-			if item.Product.Stock < item.Quantity {
-				return ErrStock // Stock insufficient
-			}
-			subtotal += item.Product.Price * float64(item.Quantity)
-		}
-
-		deliveryFee := getDeliveryFee(method)
-		discount := 0.0
-
-		var voucher models.DiscountVoucher
-		if req.VoucherCode != "" {
-			if err := tx.Where("code = ? AND store_id = ?", req.VoucherCode, cart.StoreID).First(&voucher).Error; err != nil {
-				return errors.New("voucher tidak ditemukan atau tidak berlaku untuk toko ini")
-			}
-			if voucher.Stock <= 0 {
-				return errors.New("kuota voucher sudah habis")
-			}
-			// Calculate discount
-			discountCalc := subtotal * (voucher.DiscountPercentage / 100.0)
-			if discountCalc > voucher.MaxDiscount {
-				discountCalc = voucher.MaxDiscount
-			}
-			discount = discountCalc
-		}
-
-		tax := (subtotal + deliveryFee - discount) * 0.12
-		total := subtotal + deliveryFee - discount + tax
-
-		// Deduct from wallet
-		var wallet models.Wallet
-		if err := tx.Where("buyer_id = ?", claims.UserID).First(&wallet).Error; err != nil {
-			return ErrNoWallet // No wallet
-		}
-
-		if wallet.Balance < total {
-			return ErrInsufficient // Insufficient funds
-		}
-
-		wallet.Balance -= total
-		if err := tx.Save(&wallet).Error; err != nil {
-			return err
-		}
-
-		// Create Order
-		order := models.Order{
-			BuyerID:        claims.UserID,
-			StoreID:        *cart.StoreID,
-			DeliveryMethod: method,
-			Subtotal:       subtotal,
-			Discount:       discount,
-			DeliveryFee:    deliveryFee,
-			PPN:            tax,
-			Total:          total,
-			CurrentStatus:  models.StatusSedangDikemas,
-		}
-		if req.VoucherCode != "" {
-			order.VoucherID = &voucher.ID
-		}
-
-		if err := tx.Create(&order).Error; err != nil {
-			return err
-		}
-		createdOrder = order
-
-		if req.VoucherCode != "" {
-			if err := tx.Model(&voucher).UpdateColumn("stock", gorm.Expr("stock - 1")).Error; err != nil {
-				return err
-			}
-		}
-
-		// Wallet tx
-		walletTx := models.WalletTransaction{
-			WalletID: wallet.ID,
-			Type:     models.WalletTxCharge,
-			Amount:   -total,
-			OrderID:  &order.ID,
-		}
-		if err := tx.Create(&walletTx).Error; err != nil {
-			return err
-		}
-
-		// Order Status History
-		history := models.OrderStatusHistory{
-			OrderID: order.ID,
-			Status:  models.StatusSedangDikemas,
-		}
-		if err := tx.Create(&history).Error; err != nil {
-			return err
-		}
-
-		// Process items
-		for _, item := range cart.Items {
-			orderItem := models.OrderItem{
-				OrderID:         order.ID,
-				ProductID:       item.ProductID,
-				Quantity:        item.Quantity,
-				PriceAtPurchase: item.Product.Price,
-			}
-			if err := tx.Create(&orderItem).Error; err != nil {
-				return err
-			}
-
-			// Reduce stock
-			if err := tx.Model(&item.Product).UpdateColumn("stock", gorm.Expr("stock - ?", item.Quantity)).Error; err != nil {
-				return err
-			}
-		}
-
-		// Clear cart
-		if err := tx.Where("cart_id = ?", cart.ID).Delete(&models.CartItem{}).Error; err != nil {
-			return err
-		}
-		if err := tx.Model(&cart).Update("store_id", nil).Error; err != nil {
-			return err
-		}
-
-		return nil
-	})
+	createdOrder, err := services.CheckoutOrder(claims.UserID, method, address.FullAddress, codeToApply)
 
 	if err != nil {
-		if errors.Is(err, ErrEmptyCart) {
+		if errors.Is(err, services.ErrEmptyCart) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "keranjang belanja kosong"})
-		} else if errors.Is(err, ErrStock) {
+		} else if errors.Is(err, services.ErrStock) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "stok produk tidak mencukupi"})
-		} else if errors.Is(err, ErrInsufficient) {
+		} else if errors.Is(err, services.ErrInsufficient) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "saldo dompet tidak mencukupi"})
-		} else if errors.Is(err, ErrNoWallet) {
+		} else if errors.Is(err, services.ErrNoWallet) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "dompet tidak ditemukan"})
 		} else if err.Error() == "voucher tidak ditemukan atau tidak berlaku untuk toko ini" || err.Error() == "kuota voucher sudah habis" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "gagal memproses checkout"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "gagal memproses checkout: " + err.Error()})
 		}
 		return
 	}
@@ -203,6 +71,10 @@ func Checkout(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "checkout berhasil", "order_id": createdOrder.ID})
 }
 
+// @Summary ListBuyerOrders
+// @Description ListBuyerOrders
+// @Tags orders
+// @Router /api/v1/buyer/orders [get]
 func ListBuyerOrders(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var orders []models.Order
@@ -210,6 +82,10 @@ func ListBuyerOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, mapOrdersToJSON(orders))
 }
 
+// @Summary GetBuyerOrder
+// @Description GetBuyerOrder
+// @Tags orders
+// @Router /api/v1/buyer/orders/{id} [get]
 func GetBuyerOrder(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	id := c.Param("id")
@@ -223,6 +99,10 @@ func GetBuyerOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, orderDetailToJSON(order))
 }
 
+// @Summary ListSellerOrders
+// @Description ListSellerOrders
+// @Tags orders
+// @Router /api/v1/seller/orders [get]
 func ListSellerOrders(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	store, ok := getMyStoreOrAbort(c, claims.UserID)

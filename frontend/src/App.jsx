@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { useEffect, useState } from 'react'
+import Lenis from 'lenis'
+import CommandPalette from './components/CommandPalette'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -19,12 +22,15 @@ import AddressPage from './pages/dashboard/buyer/AddressPage'
 import CartPage from './pages/dashboard/buyer/CartPage'
 import OrderHistoryPage from './pages/dashboard/buyer/OrderHistoryPage'
 import OrderDetailPage from './pages/dashboard/buyer/OrderDetailPage'
+import CheckoutPage from './pages/dashboard/buyer/CheckoutPage'
 
 import SellerDashboard from './pages/dashboard/SellerDashboard'
+import SellerReports from './pages/dashboard/SellerReports'
 import StoreManagementPage from './pages/dashboard/seller/StoreManagementPage'
 import ProductManagementPage from './pages/dashboard/seller/ProductManagementPage'
 import SellerOrdersPage from './pages/dashboard/seller/SellerOrdersPage'
 import DriverDashboard from './pages/dashboard/DriverDashboard'
+import AvailableJobsPage from './pages/dashboard/driver/AvailableJobsPage'
 import AdminDashboard from './pages/dashboard/AdminDashboard'
 import AdminPromosPage from './pages/dashboard/admin/AdminPromosPage'
 import AdminSimulatePage from './pages/dashboard/admin/AdminSimulatePage'
@@ -42,7 +48,7 @@ function PublicLayout({ children }) {
   )
 }
 
-// Layout with only Navbar (dashboards — sidebar is inside each dashboard)
+// Layout with only Navbar (dashboards - sidebar is inside each dashboard)
 function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
@@ -53,9 +59,25 @@ function DashboardLayout({ children }) {
 }
 
 export default function App() {
+  const [cmdOpen, setCmdOpen] = useState(false)
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      smoothWheel: true,
+      wheelMultiplier: 1,
+    })
+    function raf(time) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+    requestAnimationFrame(raf)
+    return () => lenis.destroy()
+  }, [])
+
   return (
     <AuthProvider>
       <BrowserRouter>
+        <CommandPalette isOpen={cmdOpen} setIsOpen={setCmdOpen} />
         <Routes>
           {/* ── Public routes ──────────────────────────── */}
           <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
@@ -63,7 +85,7 @@ export default function App() {
           <Route path="/products/:id" element={<PublicLayout><ProductDetailPage /></PublicLayout>} />
           <Route path="/stores/:id" element={<PublicLayout><StoreDetailPage /></PublicLayout>} />
 
-          {/* ── Auth pages (no layout — full-screen) ───── */}
+          {/* -- Auth pages (no layout - full-screen) ----- */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
@@ -78,6 +100,7 @@ export default function App() {
             <Route path="/buyer/wallet" element={<DashboardLayout><WalletPage /></DashboardLayout>} />
             <Route path="/buyer/address" element={<DashboardLayout><AddressPage /></DashboardLayout>} />
             <Route path="/buyer/cart" element={<DashboardLayout><CartPage /></DashboardLayout>} />
+            <Route path="/buyer/checkout" element={<DashboardLayout><CheckoutPage /></DashboardLayout>} />
             <Route path="/buyer/orders" element={<DashboardLayout><OrderHistoryPage /></DashboardLayout>} />
             <Route path="/buyer/orders/:id" element={<DashboardLayout><OrderDetailPage /></DashboardLayout>} />
           </Route>
@@ -87,10 +110,12 @@ export default function App() {
             <Route path="/seller/store" element={<DashboardLayout><StoreManagementPage /></DashboardLayout>} />
             <Route path="/seller/products" element={<DashboardLayout><ProductManagementPage /></DashboardLayout>} />
             <Route path="/seller/orders" element={<DashboardLayout><SellerOrdersPage /></DashboardLayout>} />
+            <Route path="/seller/reports" element={<DashboardLayout><SellerReports /></DashboardLayout>} />
           </Route>
 
           <Route element={<PrivateRoute requiredRole="driver" />}>
-            <Route path="/driver/dashboard" element={<DashboardLayout><DriverDashboard /></DashboardLayout>} />
+            <Route path="/driver/dashboard" element={<DriverDashboard />} />
+            <Route path="/driver/available" element={<AvailableJobsPage />} />
           </Route>
 
           <Route element={<PrivateRoute requiredRole="admin" />}>

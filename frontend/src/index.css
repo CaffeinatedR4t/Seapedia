@@ -12,11 +12,11 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-sky-50 text-slate-800 font-sans antialiased;
+    @apply bg-paper-50 text-ink-900 font-body antialiased;
     font-feature-settings: "kern" 1, "liga" 1;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold text-slate-900;
+    @apply font-display font-semibold text-ink-900;
   }
 }
 
@@ -30,59 +30,66 @@
   .btn-lg  { @apply btn px-8 py-3 text-base; }
 
   .btn-primary {
-    @apply bg-sky-600 hover:bg-sky-700 text-white shadow-sm hover:shadow-ocean focus:ring-sky-500;
+    @apply bg-coral-600 hover:bg-coral-700 text-paper-50 shadow-sm focus:ring-coral-600;
   }
   .btn-secondary {
-    @apply bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 hover:border-sky-300 shadow-sm focus:ring-sky-400;
+    @apply bg-transparent hover:bg-paper-100 text-ink-900 border border-ink-900 shadow-sm focus:ring-ink-500;
   }
   .btn-outline {
-    @apply border-2 border-sky-600 text-sky-600 hover:bg-sky-600 hover:text-white focus:ring-sky-500;
+    @apply border-2 border-coral-600 text-coral-600 hover:bg-coral-600 hover:text-paper-50 focus:ring-coral-600;
   }
   .btn-ghost {
-    @apply text-sky-700 hover:bg-sky-100 focus:ring-sky-400;
+    @apply text-coral-600 hover:bg-coral-100 focus:ring-coral-600 bg-transparent;
   }
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white shadow-sm focus:ring-red-500;
+    @apply bg-error hover:opacity-90 text-paper-50 shadow-sm focus:ring-error;
   }
   .btn-white {
-    @apply bg-white hover:bg-sky-50 text-sky-800 shadow-md hover:shadow-ocean-lg focus:ring-white;
+    @apply bg-paper-50 hover:bg-paper-100 text-ink-900 shadow-md focus:ring-paper-50;
   }
   .btn-outline-white {
-    @apply border-2 border-white/60 text-white hover:bg-white/10 focus:ring-white;
+    @apply border-2 border-paper-50/60 text-paper-50 hover:bg-paper-50/10 focus:ring-paper-50;
   }
 
   /* ── Cards ───────────────────────────────────── */
   .card {
-    @apply bg-white rounded-2xl shadow-card border border-sky-100/60 transition-all duration-200;
+    @apply bg-white rounded-lg border border-paper-200 transition-all duration-200;
   }
   .card-hover {
-    @apply card hover:shadow-card-hover hover:-translate-y-0.5;
+    @apply card hover:shadow-sm hover:-translate-y-0.5;
   }
   .card-glass {
-    @apply bg-white/80 backdrop-blur-md rounded-2xl border border-white/40 shadow-ocean;
+    @apply bg-paper-100/80 backdrop-blur-md rounded-lg border border-paper-200;
   }
 
   /* ── Form Elements ───────────────────────────── */
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-sky-200 bg-white text-slate-700
-           placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400
-           focus:border-transparent transition-all duration-200 text-sm;
+    @apply w-full px-4 py-3 rounded text-sm border border-paper-200 bg-paper-50 text-ink-900
+           placeholder-ink-500 focus:outline-none focus:ring-0 focus:border-coral-600
+           transition-all duration-200;
+    box-shadow: none;
+  }
+  .input-field:focus {
+    box-shadow: 0 0 0 3px rgba(217, 99, 59, 0.15); /* coral-600 at 15% */
   }
   .input-field-error {
-    @apply input-field border-red-300 focus:ring-red-400;
+    @apply input-field border-error;
+  }
+  .input-field-error:focus {
+    box-shadow: 0 0 0 3px rgba(179, 57, 44, 0.15); /* error at 15% */
   }
   .label {
-    @apply block text-sm font-medium text-slate-700 mb-1.5;
+    @apply block text-sm font-medium text-ink-700 mb-1.5;
   }
 
   /* ── Badges ──────────────────────────────────── */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-[10px] py-[4px] rounded-full text-xs font-medium border;
   }
-  .badge-buyer  { @apply badge bg-sky-100 text-sky-700; }
-  .badge-seller { @apply badge bg-emerald-100 text-emerald-700; }
-  .badge-driver { @apply badge bg-amber-100 text-amber-700; }
-  .badge-admin  { @apply badge bg-purple-100 text-purple-700; }
+  .badge-buyer  { @apply bg-coral-600/10 text-coral-600 border-coral-600/30; }
+  .badge-seller { @apply bg-success/10 text-success border-success/30; }
+  .badge-driver { @apply bg-gold-500/10 text-gold-500 border-gold-500/30; }
+  .badge-admin  { @apply bg-ink-700/10 text-ink-700 border-ink-700/30; }
 
   /* ── Section ─────────────────────────────────── */
   .section {

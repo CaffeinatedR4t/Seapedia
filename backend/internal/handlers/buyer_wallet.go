@@ -15,6 +15,10 @@ type TopUpRequest struct {
 	Amount float64 `json:"amount" binding:"required,min=10000"`
 }
 
+// @Summary GetWallet
+// @Description GetWallet
+// @Tags buyer_wallet
+// @Router /api/v1/buyer/wallet [get]
 func GetWallet(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var wallet models.Wallet
@@ -53,6 +57,10 @@ func GetWallet(c *gin.Context) {
 	})
 }
 
+// @Summary TopUpWallet
+// @Description TopUpWallet
+// @Tags buyer_wallet
+// @Router /api/v1/buyer/wallet/topup [post]
 func TopUpWallet(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var req TopUpRequest

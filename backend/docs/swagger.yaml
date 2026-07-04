@@ -1,0 +1,332 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: Multi-role marketplace API — COMPFEST 18
+  title: SEAPEDIA API
+  version: "1.0"
+paths:
+  /api/v1/admin/promos:
+    get:
+      description: ListPromos
+      responses: {}
+      summary: ListPromos
+      tags:
+      - admin
+    post:
+      description: CreatePromo
+      responses: {}
+      summary: CreatePromo
+      tags:
+      - admin
+  /api/v1/admin/promos/{id}:
+    get:
+      description: GetPromo
+      responses: {}
+      summary: GetPromo
+      tags:
+      - admin
+  /api/v1/admin/simulate-overdue:
+    post:
+      description: SimulateOverdue
+      responses: {}
+      summary: SimulateOverdue
+      tags:
+      - admin
+  /api/v1/admin/stats:
+    get:
+      description: AdminStats
+      responses: {}
+      summary: AdminStats
+      tags:
+      - admin
+  /api/v1/admin/vouchers:
+    get:
+      description: ListVouchers
+      responses: {}
+      summary: ListVouchers
+      tags:
+      - admin
+    post:
+      description: CreateVoucher
+      responses: {}
+      summary: CreateVoucher
+      tags:
+      - admin
+  /api/v1/admin/vouchers/{id}:
+    get:
+      description: GetVoucher
+      responses: {}
+      summary: GetVoucher
+      tags:
+      - admin
+  /api/v1/auth/login:
+    post:
+      description: Login
+      responses: {}
+      summary: Login
+      tags:
+      - auth
+  /api/v1/auth/me:
+    get:
+      description: Me
+      responses: {}
+      summary: Me
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      description: Register
+      responses: {}
+      summary: Register
+      tags:
+      - auth
+  /api/v1/auth/select-role:
+    post:
+      description: SelectRole
+      responses: {}
+      summary: SelectRole
+      tags:
+      - auth
+  /api/v1/buyer/address:
+    get:
+      description: ListAddresses
+      responses: {}
+      summary: ListAddresses
+      tags:
+      - buyer_address
+    post:
+      description: CreateAddress
+      responses: {}
+      summary: CreateAddress
+      tags:
+      - buyer_address
+  /api/v1/buyer/address/{id}:
+    delete:
+      description: DeleteAddress
+      responses: {}
+      summary: DeleteAddress
+      tags:
+      - buyer_address
+    put:
+      description: UpdateAddress
+      responses: {}
+      summary: UpdateAddress
+      tags:
+      - buyer_address
+  /api/v1/buyer/cart:
+    get:
+      description: GetCart
+      responses: {}
+      summary: GetCart
+      tags:
+      - buyer_cart
+    post:
+      description: AddToCart
+      responses: {}
+      summary: AddToCart
+      tags:
+      - buyer_cart
+  /api/v1/buyer/cart/{itemId}:
+    delete:
+      description: DeleteCartItem
+      responses: {}
+      summary: DeleteCartItem
+      tags:
+      - buyer_cart
+    put:
+      description: UpdateCartItem
+      responses: {}
+      summary: UpdateCartItem
+      tags:
+      - buyer_cart
+  /api/v1/buyer/checkout:
+    post:
+      description: Checkout
+      responses: {}
+      summary: Checkout
+      tags:
+      - orders
+  /api/v1/buyer/orders:
+    get:
+      description: ListBuyerOrders
+      responses: {}
+      summary: ListBuyerOrders
+      tags:
+      - orders
+  /api/v1/buyer/orders/{id}:
+    get:
+      description: GetBuyerOrder
+      responses: {}
+      summary: GetBuyerOrder
+      tags:
+      - orders
+  /api/v1/buyer/report/spending:
+    get:
+      description: BuyerSpendingReport
+      responses: {}
+      summary: BuyerSpendingReport
+      tags:
+      - reports
+  /api/v1/buyer/wallet:
+    get:
+      description: GetWallet
+      responses: {}
+      summary: GetWallet
+      tags:
+      - buyer_wallet
+  /api/v1/buyer/wallet/topup:
+    post:
+      description: TopUpWallet
+      responses: {}
+      summary: TopUpWallet
+      tags:
+      - buyer_wallet
+  /api/v1/driver/earnings:
+    get:
+      description: DriverEarnings
+      responses: {}
+      summary: DriverEarnings
+      tags:
+      - driver_order
+  /api/v1/driver/orders/{id}/finish:
+    put:
+      description: FinishOrder
+      responses: {}
+      summary: FinishOrder
+      tags:
+      - driver_order
+  /api/v1/driver/orders/{id}/pickup:
+    put:
+      description: PickupOrder
+      responses: {}
+      summary: PickupOrder
+      tags:
+      - driver_order
+  /api/v1/driver/orders/active:
+    get:
+      description: ListActiveOrders
+      responses: {}
+      summary: ListActiveOrders
+      tags:
+      - driver_order
+  /api/v1/driver/orders/available:
+    get:
+      description: ListAvailableOrders
+      responses: {}
+      summary: ListAvailableOrders
+      tags:
+      - driver_order
+  /api/v1/driver/orders/history:
+    get:
+      description: JobHistory
+      responses: {}
+      summary: JobHistory
+      tags:
+      - driver_order
+  /api/v1/products:
+    get:
+      description: ListProducts
+      responses: {}
+      summary: ListProducts
+      tags:
+      - product
+  /api/v1/products/{id}:
+    get:
+      description: GetProduct
+      responses: {}
+      summary: GetProduct
+      tags:
+      - product
+  /api/v1/reviews:
+    get:
+      description: ListReviews
+      responses: {}
+      summary: ListReviews
+      tags:
+      - review
+    post:
+      description: CreateReview
+      responses: {}
+      summary: CreateReview
+      tags:
+      - review
+  /api/v1/seller/orders:
+    get:
+      description: ListSellerOrders
+      responses: {}
+      summary: ListSellerOrders
+      tags:
+      - orders
+  /api/v1/seller/orders/{id}/status:
+    put:
+      description: UpdateSellerOrderStatus
+      responses: {}
+      summary: UpdateSellerOrderStatus
+      tags:
+      - seller_order
+  /api/v1/seller/products:
+    get:
+      description: ListMyProducts
+      responses: {}
+      summary: ListMyProducts
+      tags:
+      - product
+    post:
+      description: CreateProduct
+      responses: {}
+      summary: CreateProduct
+      tags:
+      - product
+  /api/v1/seller/products/{id}:
+    delete:
+      description: DeleteProduct
+      responses: {}
+      summary: DeleteProduct
+      tags:
+      - product
+    put:
+      description: UpdateProduct
+      responses: {}
+      summary: UpdateProduct
+      tags:
+      - product
+  /api/v1/seller/report/income:
+    get:
+      description: SellerIncomeReport
+      responses: {}
+      summary: SellerIncomeReport
+      tags:
+      - reports
+  /api/v1/seller/store:
+    get:
+      description: GetMyStore
+      responses: {}
+      summary: GetMyStore
+      tags:
+      - store
+    post:
+      description: CreateStore
+      responses: {}
+      summary: CreateStore
+      tags:
+      - store
+    put:
+      description: UpdateStore
+      responses: {}
+      summary: UpdateStore
+      tags:
+      - store
+  /api/v1/stores/{id}:
+    get:
+      description: GetStore
+      responses: {}
+      summary: GetStore
+      tags:
+      - store
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

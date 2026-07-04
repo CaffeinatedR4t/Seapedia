@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Eye, EyeOff, CheckCircle } from 'lucide-react'
 import client from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import Input from '../components/Input'
@@ -47,21 +48,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-cyan-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-paper-50 flex items-center justify-center p-4 font-body">
       <div className="w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-white">
-            <span className="text-4xl">🌊</span>
-            <span className="text-3xl font-extrabold">SEAPEDIA</span>
+          <Link to="/" className="inline-flex items-center gap-3 text-ink-900 hover:opacity-80 transition-opacity">
+            <img src="/images/seapedia_nobg.png" alt="SEAPEDIA" className="w-12 h-12 object-contain" />
+            <span className="text-4xl font-extrabold font-display tracking-tight text-ink-900">SEAPEDIA</span>
           </Link>
-          <p className="text-sky-200 mt-2">Masuk ke akunmu</p>
+          <p className="text-ink-500 mt-3 text-sm font-medium">Selamat datang kembali! Silakan masuk ke akunmu</p>
         </div>
 
-        <div className="card p-8">
+        <div className="bg-white p-8 rounded-3xl shadow-ocean-lg border border-paper-100">
           {successMsg && (
-            <div className="mb-5 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm flex items-center gap-2">
-              ✅ {successMsg}
+            <div className="mb-5 p-4 bg-success/10 border border-success/30 rounded-xl text-success text-sm flex items-center gap-3 font-medium">
+              <CheckCircle size={18} className="text-success" /> {successMsg}
             </div>
           )}
 
@@ -88,15 +89,15 @@ export default function LoginPage() {
               autoComplete="current-password"
               rightElement={
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="text-slate-400 hover:text-slate-600 text-sm">
-                  {showPassword ? '🙈' : '👁️'}
+                  className="text-slate-400 hover:text-slate-600 text-sm flex items-center justify-center">
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               }
             />
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-                ⚠ {error}
+              <div className="p-4 bg-error/10 border border-error/30 rounded-xl text-error text-sm font-medium flex items-center gap-2">
+                <span className="text-error">⚠</span> {error}
               </div>
             )}
 
@@ -105,14 +106,14 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-slate-600">
+          <div className="mt-6 text-center text-sm text-ink-500 font-medium">
             Belum punya akun?{' '}
-            <Link to="/register" className="text-sky-600 font-semibold hover:underline">Daftar sekarang</Link>
+            <Link to="/register" className="text-coral-600 font-semibold hover:text-coral-700 hover:underline transition-colors">Daftar sekarang</Link>
           </div>
         </div>
 
-        <p className="text-center text-sky-300 text-xs mt-6">
-          © 2024 SEAPEDIA · COMPFEST 18
+        <p className="text-center text-ink-500/60 text-xs mt-8 font-medium">
+          &copy; {new Date().getFullYear()} SEAPEDIA &middot; COMPFEST 18
         </p>
       </div>
     </div>

@@ -27,6 +27,10 @@ type SelectRoleRequest struct {
 	Role string `json:"role" binding:"required"`
 }
 
+// @Summary Register
+// @Description Register
+// @Tags auth
+// @Router /api/v1/auth/register [post]
 func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -79,6 +83,10 @@ func Register(c *gin.Context) {
 	})
 }
 
+// @Summary Login
+// @Description Login
+// @Tags auth
+// @Router /api/v1/auth/login [post]
 func Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -123,6 +131,10 @@ func Login(c *gin.Context) {
 	})
 }
 
+// @Summary Me
+// @Description Me
+// @Tags auth
+// @Router /api/v1/auth/me [get]
 func Me(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var userRoles []models.UserRole
@@ -137,6 +149,10 @@ func Me(c *gin.Context) {
 	})
 }
 
+// @Summary SelectRole
+// @Description SelectRole
+// @Tags auth
+// @Router /api/v1/auth/select-role [post]
 func SelectRole(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var req SelectRoleRequest

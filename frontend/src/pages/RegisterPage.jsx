@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { ShoppingCart, Store, Truck, Eye, EyeOff, Check } from 'lucide-react'
 import client from '../api/client'
 import Input from '../components/Input'
 import Button from '../components/Button'
 
 const ROLES = [
-  { id: 'buyer',  icon: '🛒', label: 'Pembeli',  desc: 'Belanja produk laut',       color: 'border-sky-400 bg-sky-50 text-sky-700' },
-  { id: 'seller', icon: '🏪', label: 'Penjual',  desc: 'Jual produk di tokomu',      color: 'border-emerald-400 bg-emerald-50 text-emerald-700' },
-  { id: 'driver', icon: '🚚', label: 'Driver',   desc: 'Antar pesanan & dapat upah', color: 'border-amber-400 bg-amber-50 text-amber-700' },
+  { id: 'buyer',  icon: <ShoppingCart size={24} />, label: 'Pembeli',  desc: 'Belanja produk laut',       color: 'border-info bg-info/10 text-info' },
+  { id: 'seller', icon: <Store size={24} />, label: 'Penjual',  desc: 'Jual produk di tokomu',      color: 'border-success bg-success/10 text-success' },
+  { id: 'driver', icon: <Truck size={24} />, label: 'Driver',   desc: 'Antar pesanan & dapat upah', color: 'border-warning bg-warning/10 text-warning' },
 ]
 
 export default function RegisterPage() {
@@ -63,18 +64,18 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-cyan-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-paper-50 flex items-center justify-center p-4 font-body py-12">
       <div className="w-full max-w-lg animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-white">
-            <span className="text-4xl">🌊</span>
-            <span className="text-3xl font-extrabold">SEAPEDIA</span>
+          <Link to="/" className="inline-flex items-center gap-3 text-ink-900 hover:opacity-80 transition-opacity">
+            <img src="/images/seapedia_nobg.png" alt="SEAPEDIA" className="w-12 h-12 object-contain" />
+            <span className="text-4xl font-extrabold font-display tracking-tight text-ink-900">SEAPEDIA</span>
           </Link>
-          <p className="text-sky-200 mt-2">Buat akun baru — gratis!</p>
+          <p className="text-ink-500 mt-3 text-sm font-medium">Buat akun baru - gratis!</p>
         </div>
 
-        <div className="card p-8">
+        <div className="bg-white p-8 sm:p-10 rounded-3xl shadow-ocean-lg border border-paper-100">
           <form onSubmit={handleSubmit} className="space-y-5">
             <Input
               label="Username"
@@ -98,8 +99,8 @@ export default function RegisterPage() {
               required
               rightElement={
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="text-slate-400 hover:text-slate-600 text-sm">
-                  {showPassword ? '🙈' : '👁️'}
+                  className="text-slate-400 hover:text-slate-600 text-sm flex items-center justify-center">
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               }
             />
@@ -131,12 +132,12 @@ export default function RegisterPage() {
                       id={`role-${id}`}
                       onClick={() => toggleRole(id)}
                       className={`
-                        relative p-3 rounded-xl border-2 text-center transition-all duration-150 cursor-pointer
-                        ${selected ? `${color} shadow-sm` : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'}
+                        relative p-4 rounded-2xl border-2 text-center transition-all duration-200 cursor-pointer hover:-translate-y-1
+                        ${selected ? `${color} shadow-md border-opacity-100` : 'border-paper-200 bg-white text-ink-500 hover:border-paper-300 hover:shadow-sm'}
                       `}
                     >
-                      {selected && <span className="absolute top-1.5 right-1.5 text-xs">✓</span>}
-                      <div className="text-2xl mb-1">{icon}</div>
+                      {selected && <Check size={14} className="absolute top-1.5 right-1.5" />}
+                      <div className="flex justify-center mb-1">{icon}</div>
                       <div className="font-semibold text-xs">{label}</div>
                       <div className="text-xs opacity-75 mt-0.5">{desc}</div>
                     </button>
@@ -147,8 +148,8 @@ export default function RegisterPage() {
             </div>
 
             {apiError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-                ⚠ {apiError}
+              <div className="p-4 bg-error/10 border border-error/30 rounded-xl text-error text-sm font-medium flex items-center gap-2">
+                <span className="text-error">⚠</span> {apiError}
               </div>
             )}
 
@@ -157,13 +158,13 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-slate-600">
+          <div className="mt-8 text-center text-sm text-ink-500 font-medium">
             Sudah punya akun?{' '}
-            <Link to="/login" className="text-sky-600 font-semibold hover:underline">Masuk sekarang</Link>
+            <Link to="/login" className="text-coral-600 font-semibold hover:text-coral-700 hover:underline transition-colors">Masuk sekarang</Link>
           </div>
         </div>
 
-        <p className="text-center text-sky-300 text-xs mt-6">© 2024 SEAPEDIA · COMPFEST 18</p>
+        <p className="text-center text-ink-500/60 text-xs mt-8 font-medium">&copy; {new Date().getFullYear()} SEAPEDIA &middot; COMPFEST 18</p>
       </div>
     </div>
   )

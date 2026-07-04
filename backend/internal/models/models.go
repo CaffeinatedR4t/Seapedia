@@ -122,6 +122,7 @@ type Order struct {
 	DriverID       *uint          `json:"driver_id"`
 	Driver         *User          `gorm:"foreignKey:DriverID"     json:"driver,omitempty"`
 	DeliveryMethod DeliveryMethod `gorm:"not null"                json:"delivery_method"`
+	DeliveryAddress string        `gorm:"not null"                json:"delivery_address"`
 	Subtotal       float64        `gorm:"not null"                json:"subtotal"`
 	Discount       float64        `gorm:"default:0"               json:"discount"`
 	DeliveryFee    float64        `gorm:"not null"                json:"delivery_fee"`
@@ -132,17 +133,9 @@ type Order struct {
 	PromoID        *uint          `json:"promo_id"`
 	Items          []OrderItem    `gorm:"foreignKey:OrderID"      json:"items,omitempty"`
 	StatusHistory  []OrderStatusHistory `gorm:"foreignKey:OrderID"      json:"status_history,omitempty"`
+
 }
 
-type DiscountVoucher struct {
-	gorm.Model
-	StoreID            uint
-	Store              Store  `gorm:"foreignKey:StoreID"`
-	Code               string `gorm:"uniqueIndex;size:50"`
-	DiscountPercentage float64
-	MaxDiscount        float64
-	Stock              int
-}
 
 // OrderItem is a snapshot of a product line at the time of purchase.
 type OrderItem struct {
@@ -239,5 +232,4 @@ type AppReview struct {
 	ReviewerName string `gorm:"not null"       json:"reviewer_name"`
 	Rating       int    `gorm:"not null"       json:"rating"`    // 1–5
 	Comment      string `gorm:"not null"       json:"comment"`   // escaped before render
-	UserID       *uint  `json:"user_id"`                         // nil for guests
 }

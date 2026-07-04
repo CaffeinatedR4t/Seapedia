@@ -15,6 +15,10 @@ type AddressRequest struct {
 	FullAddress string `json:"full_address" binding:"required,min=10,max=500"`
 }
 
+// @Summary ListAddresses
+// @Description ListAddresses
+// @Tags buyer_address
+// @Router /api/v1/buyer/address [get]
 func ListAddresses(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var addresses []models.Address
@@ -34,6 +38,10 @@ func ListAddresses(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// @Summary CreateAddress
+// @Description CreateAddress
+// @Tags buyer_address
+// @Router /api/v1/buyer/address [post]
 func CreateAddress(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var req AddressRequest
@@ -60,6 +68,10 @@ func CreateAddress(c *gin.Context) {
 	})
 }
 
+// @Summary UpdateAddress
+// @Description UpdateAddress
+// @Tags buyer_address
+// @Router /api/v1/buyer/address/{id} [put]
 func UpdateAddress(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	idStr := c.Param("id")
@@ -95,6 +107,10 @@ func UpdateAddress(c *gin.Context) {
 	})
 }
 
+// @Summary DeleteAddress
+// @Description DeleteAddress
+// @Tags buyer_address
+// @Router /api/v1/buyer/address/{id} [delete]
 func DeleteAddress(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	idStr := c.Param("id")

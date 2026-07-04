@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import client from '../api/client'
 import LoadingSpinner from '../components/LoadingSpinner'
+import { ShoppingCart, Store as StoreIcon, Truck, Settings, Waves } from 'lucide-react'
 
 const ROLE_CONFIG = {
-  buyer:  { icon: '🛒', label: 'Pembeli',  desc: 'Belanja produk, kelola keranjang & checkout',  color: 'from-sky-500 to-cyan-500',      border: 'border-sky-400',   bg: 'hover:bg-sky-50',    dash: '/buyer/dashboard' },
-  seller: { icon: '🏪', label: 'Penjual',  desc: 'Kelola toko, produk, & lihat pesanan masuk',   color: 'from-emerald-500 to-teal-500',  border: 'border-emerald-400', bg: 'hover:bg-emerald-50', dash: '/seller/dashboard' },
-  driver: { icon: '🚚', label: 'Driver',   desc: 'Cari & ambil pekerjaan pengiriman',             color: 'from-amber-500 to-orange-500',  border: 'border-amber-400', bg: 'hover:bg-amber-50',  dash: '/driver/dashboard' },
-  admin:  { icon: '⚙️', label: 'Admin',    desc: 'Monitor marketplace & kelola sistem',            color: 'from-purple-500 to-indigo-500', border: 'border-purple-400', bg: 'hover:bg-purple-50', dash: '/admin/dashboard' },
+  buyer:  { icon: <ShoppingCart size={24} />, label: 'Pembeli',  desc: 'Belanja produk, kelola keranjang & checkout',  color: 'from-sky-500 to-cyan-500',      border: 'border-sky-400',   bg: 'hover:bg-sky-50',    dash: '/buyer/dashboard' },
+  seller: { icon: <StoreIcon size={24} />, label: 'Penjual',  desc: 'Kelola toko, produk, & lihat pesanan masuk',   color: 'from-emerald-500 to-teal-500',  border: 'border-emerald-400', bg: 'hover:bg-emerald-50', dash: '/seller/dashboard' },
+  driver: { icon: <Truck size={24} />, label: 'Driver',   desc: 'Cari & ambil pekerjaan pengiriman',             color: 'from-amber-500 to-orange-500',  border: 'border-amber-400', bg: 'hover:bg-amber-50',  dash: '/driver/dashboard' },
+  admin:  { icon: <Settings size={24} />, label: 'Admin',    desc: 'Monitor marketplace & kelola sistem',            color: 'from-purple-500 to-indigo-500', border: 'border-purple-400', bg: 'hover:bg-purple-50', dash: '/admin/dashboard' },
 }
 
 export default function RoleSelectionPage() {
@@ -38,8 +39,8 @@ export default function RoleSelectionPage() {
     <div className="min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-cyan-700 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl animate-slide-up">
         {/* Header */}
-        <div className="text-center mb-8">
-          <span className="text-4xl">🌊</span>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Waves size={40} className="text-white" />
           <h1 className="text-3xl font-extrabold text-white mt-2">Pilih Peran Aktif</h1>
           <p className="text-sky-200 mt-2">
             Halo, <span className="font-semibold text-white">{user.username}</span>!

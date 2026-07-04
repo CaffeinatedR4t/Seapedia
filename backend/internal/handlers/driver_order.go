@@ -12,6 +12,10 @@ import (
 	"seapedia/internal/models"
 )
 
+// @Summary ListAvailableOrders
+// @Description ListAvailableOrders
+// @Tags driver_order
+// @Router /api/v1/driver/orders/available [get]
 func ListAvailableOrders(c *gin.Context) {
 	var jobs []models.DeliveryJob
 	db.DB.Preload("Order.Store").Where("status = ?", models.StatusMenungguPengirim).Order("id asc").Find(&jobs)
@@ -32,6 +36,10 @@ func ListAvailableOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary ListActiveOrders
+// @Description ListActiveOrders
+// @Tags driver_order
+// @Router /api/v1/driver/orders/active [get]
 func ListActiveOrders(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var jobs []models.DeliveryJob
@@ -52,6 +60,10 @@ func ListActiveOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary PickupOrder
+// @Description PickupOrder
+// @Tags driver_order
+// @Router /api/v1/driver/orders/{id}/pickup [put]
 func PickupOrder(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	id := c.Param("id")
@@ -62,33 +74,30 @@ func PickupOrder(c *gin.Context) {
 			return gorm.ErrRecordNotFound
 		}
 
-		if job.Status != models.StatusMenungguPengirim {
+		now := time.Now()
+		res := tx.Model(&models.DeliveryJob{}).
+			Where("order_id = ? AND status = ?", id, models.StatusMenungguPengirim).
+			Updates(map[string]interface{}{
+				"status":    models.StatusSedangDikirim,
+				"driver_id": claims.UserID,
+				"taken_at":  now,
+			})
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected == 0 {
 			return gorm.ErrInvalidData
 		}
 
-		var order models.Order
-		if err := tx.First(&order, id).Error; err != nil {
-			return err
-		}
-
-		now := time.Now()
-		// Update job
-		job.Status = models.StatusSedangDikirim
-		job.DriverID = &claims.UserID
-		job.TakenAt = &now
-		if err := tx.Save(&job).Error; err != nil {
-			return err
-		}
-
-		// Update order
-		order.CurrentStatus = models.StatusSedangDikirim
-		order.DriverID = &claims.UserID
-		if err := tx.Save(&order).Error; err != nil {
+		if err := tx.Model(&models.Order{}).Where("id = ?", id).Updates(map[string]interface{}{
+			"current_status": models.StatusSedangDikirim,
+			"driver_id":      claims.UserID,
+		}).Error; err != nil {
 			return err
 		}
 
 		history := models.OrderStatusHistory{
-			OrderID: order.ID,
+			OrderID: job.OrderID,
 			Status:  models.StatusSedangDikirim,
 		}
 		return tx.Create(&history).Error
@@ -108,6 +117,10 @@ func PickupOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "pesanan berhasil diambil"})
 }
 
+// @Summary FinishOrder
+// @Description FinishOrder
+// @Tags driver_order
+// @Router /api/v1/driver/orders/{id}/finish [put]
 func FinishOrder(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	id := c.Param("id")
@@ -118,29 +131,26 @@ func FinishOrder(c *gin.Context) {
 			return gorm.ErrRecordNotFound
 		}
 
-		if job.Status != models.StatusSedangDikirim {
+		now := time.Now()
+		res := tx.Model(&models.DeliveryJob{}).
+			Where("order_id = ? AND driver_id = ? AND status = ?", id, claims.UserID, models.StatusSedangDikirim).
+			Updates(map[string]interface{}{
+				"status":       models.StatusPesananSelesai,
+				"completed_at": now,
+			})
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected == 0 {
 			return gorm.ErrInvalidData
 		}
 
-		var order models.Order
-		if err := tx.First(&order, id).Error; err != nil {
-			return err
-		}
-
-		now := time.Now()
-		job.Status = models.StatusPesananSelesai
-		job.CompletedAt = &now
-		if err := tx.Save(&job).Error; err != nil {
-			return err
-		}
-
-		order.CurrentStatus = models.StatusPesananSelesai
-		if err := tx.Save(&order).Error; err != nil {
+		if err := tx.Model(&models.Order{}).Where("id = ?", id).Update("current_status", models.StatusPesananSelesai).Error; err != nil {
 			return err
 		}
 
 		history := models.OrderStatusHistory{
-			OrderID: order.ID,
+			OrderID: job.OrderID,
 			Status:  models.StatusPesananSelesai,
 		}
 		return tx.Create(&history).Error
@@ -160,6 +170,10 @@ func FinishOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "pesanan selesai"})
 }
 
+// @Summary DriverEarnings
+// @Description DriverEarnings
+// @Tags driver_order
+// @Router /api/v1/driver/earnings [get]
 func DriverEarnings(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var jobs []models.DeliveryJob
@@ -174,4 +188,30 @@ func DriverEarnings(c *gin.Context) {
 		"completed_jobs": len(jobs),
 		"total_earnings": totalEarnings,
 	})
+}
+
+// @Summary JobHistory
+// @Description JobHistory
+// @Tags driver_order
+// @Router /api/v1/driver/orders/history [get]
+func JobHistory(c *gin.Context) {
+	claims := middleware.GetClaims(c)
+	var jobs []models.DeliveryJob
+	db.DB.Preload("Order.Store").Where("driver_id = ? AND status = ?", claims.UserID, models.StatusPesananSelesai).Order("completed_at desc").Find(&jobs)
+	
+	res := make([]gin.H, len(jobs))
+	for i, j := range jobs {
+		res[i] = gin.H{
+			"id":              j.Order.ID,
+			"created_at":      j.Order.CreatedAt,
+			"completed_at":    j.CompletedAt,
+			"delivery_method": j.Order.DeliveryMethod,
+			"store_name":      j.Order.Store.Name,
+			"delivery_fee":    j.Order.DeliveryFee,
+		}
+	}
+	if len(jobs) == 0 {
+		res = []gin.H{}
+	}
+	c.JSON(http.StatusOK, res)
 }

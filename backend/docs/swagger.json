@@ -1,0 +1,468 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Multi-role marketplace API — COMPFEST 18",
+        "title": "SEAPEDIA API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/api/v1/admin/promos": {
+            "get": {
+                "description": "ListPromos",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "ListPromos",
+                "responses": {}
+            },
+            "post": {
+                "description": "CreatePromo",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "CreatePromo",
+                "responses": {}
+            }
+        },
+        "/api/v1/admin/promos/{id}": {
+            "get": {
+                "description": "GetPromo",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "GetPromo",
+                "responses": {}
+            }
+        },
+        "/api/v1/admin/simulate-overdue": {
+            "post": {
+                "description": "SimulateOverdue",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "SimulateOverdue",
+                "responses": {}
+            }
+        },
+        "/api/v1/admin/stats": {
+            "get": {
+                "description": "AdminStats",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "AdminStats",
+                "responses": {}
+            }
+        },
+        "/api/v1/admin/vouchers": {
+            "get": {
+                "description": "ListVouchers",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "ListVouchers",
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateVoucher",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "CreateVoucher",
+                "responses": {}
+            }
+        },
+        "/api/v1/admin/vouchers/{id}": {
+            "get": {
+                "description": "GetVoucher",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "GetVoucher",
+                "responses": {}
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "description": "Login",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "responses": {}
+            }
+        },
+        "/api/v1/auth/me": {
+            "get": {
+                "description": "Me",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Me",
+                "responses": {}
+            }
+        },
+        "/api/v1/auth/register": {
+            "post": {
+                "description": "Register",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register",
+                "responses": {}
+            }
+        },
+        "/api/v1/auth/select-role": {
+            "post": {
+                "description": "SelectRole",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "SelectRole",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/address": {
+            "get": {
+                "description": "ListAddresses",
+                "tags": [
+                    "buyer_address"
+                ],
+                "summary": "ListAddresses",
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateAddress",
+                "tags": [
+                    "buyer_address"
+                ],
+                "summary": "CreateAddress",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/address/{id}": {
+            "put": {
+                "description": "UpdateAddress",
+                "tags": [
+                    "buyer_address"
+                ],
+                "summary": "UpdateAddress",
+                "responses": {}
+            },
+            "delete": {
+                "description": "DeleteAddress",
+                "tags": [
+                    "buyer_address"
+                ],
+                "summary": "DeleteAddress",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/cart": {
+            "get": {
+                "description": "GetCart",
+                "tags": [
+                    "buyer_cart"
+                ],
+                "summary": "GetCart",
+                "responses": {}
+            },
+            "post": {
+                "description": "AddToCart",
+                "tags": [
+                    "buyer_cart"
+                ],
+                "summary": "AddToCart",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/cart/{itemId}": {
+            "put": {
+                "description": "UpdateCartItem",
+                "tags": [
+                    "buyer_cart"
+                ],
+                "summary": "UpdateCartItem",
+                "responses": {}
+            },
+            "delete": {
+                "description": "DeleteCartItem",
+                "tags": [
+                    "buyer_cart"
+                ],
+                "summary": "DeleteCartItem",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/checkout": {
+            "post": {
+                "description": "Checkout",
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Checkout",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/orders": {
+            "get": {
+                "description": "ListBuyerOrders",
+                "tags": [
+                    "orders"
+                ],
+                "summary": "ListBuyerOrders",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/orders/{id}": {
+            "get": {
+                "description": "GetBuyerOrder",
+                "tags": [
+                    "orders"
+                ],
+                "summary": "GetBuyerOrder",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/report/spending": {
+            "get": {
+                "description": "BuyerSpendingReport",
+                "tags": [
+                    "reports"
+                ],
+                "summary": "BuyerSpendingReport",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/wallet": {
+            "get": {
+                "description": "GetWallet",
+                "tags": [
+                    "buyer_wallet"
+                ],
+                "summary": "GetWallet",
+                "responses": {}
+            }
+        },
+        "/api/v1/buyer/wallet/topup": {
+            "post": {
+                "description": "TopUpWallet",
+                "tags": [
+                    "buyer_wallet"
+                ],
+                "summary": "TopUpWallet",
+                "responses": {}
+            }
+        },
+        "/api/v1/driver/earnings": {
+            "get": {
+                "description": "DriverEarnings",
+                "tags": [
+                    "driver_order"
+                ],
+                "summary": "DriverEarnings",
+                "responses": {}
+            }
+        },
+        "/api/v1/driver/orders/active": {
+            "get": {
+                "description": "ListActiveOrders",
+                "tags": [
+                    "driver_order"
+                ],
+                "summary": "ListActiveOrders",
+                "responses": {}
+            }
+        },
+        "/api/v1/driver/orders/available": {
+            "get": {
+                "description": "ListAvailableOrders",
+                "tags": [
+                    "driver_order"
+                ],
+                "summary": "ListAvailableOrders",
+                "responses": {}
+            }
+        },
+        "/api/v1/driver/orders/history": {
+            "get": {
+                "description": "JobHistory",
+                "tags": [
+                    "driver_order"
+                ],
+                "summary": "JobHistory",
+                "responses": {}
+            }
+        },
+        "/api/v1/driver/orders/{id}/finish": {
+            "put": {
+                "description": "FinishOrder",
+                "tags": [
+                    "driver_order"
+                ],
+                "summary": "FinishOrder",
+                "responses": {}
+            }
+        },
+        "/api/v1/driver/orders/{id}/pickup": {
+            "put": {
+                "description": "PickupOrder",
+                "tags": [
+                    "driver_order"
+                ],
+                "summary": "PickupOrder",
+                "responses": {}
+            }
+        },
+        "/api/v1/products": {
+            "get": {
+                "description": "ListProducts",
+                "tags": [
+                    "product"
+                ],
+                "summary": "ListProducts",
+                "responses": {}
+            }
+        },
+        "/api/v1/products/{id}": {
+            "get": {
+                "description": "GetProduct",
+                "tags": [
+                    "product"
+                ],
+                "summary": "GetProduct",
+                "responses": {}
+            }
+        },
+        "/api/v1/reviews": {
+            "get": {
+                "description": "ListReviews",
+                "tags": [
+                    "review"
+                ],
+                "summary": "ListReviews",
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateReview",
+                "tags": [
+                    "review"
+                ],
+                "summary": "CreateReview",
+                "responses": {}
+            }
+        },
+        "/api/v1/seller/orders": {
+            "get": {
+                "description": "ListSellerOrders",
+                "tags": [
+                    "orders"
+                ],
+                "summary": "ListSellerOrders",
+                "responses": {}
+            }
+        },
+        "/api/v1/seller/orders/{id}/status": {
+            "put": {
+                "description": "UpdateSellerOrderStatus",
+                "tags": [
+                    "seller_order"
+                ],
+                "summary": "UpdateSellerOrderStatus",
+                "responses": {}
+            }
+        },
+        "/api/v1/seller/products": {
+            "get": {
+                "description": "ListMyProducts",
+                "tags": [
+                    "product"
+                ],
+                "summary": "ListMyProducts",
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateProduct",
+                "tags": [
+                    "product"
+                ],
+                "summary": "CreateProduct",
+                "responses": {}
+            }
+        },
+        "/api/v1/seller/products/{id}": {
+            "put": {
+                "description": "UpdateProduct",
+                "tags": [
+                    "product"
+                ],
+                "summary": "UpdateProduct",
+                "responses": {}
+            },
+            "delete": {
+                "description": "DeleteProduct",
+                "tags": [
+                    "product"
+                ],
+                "summary": "DeleteProduct",
+                "responses": {}
+            }
+        },
+        "/api/v1/seller/report/income": {
+            "get": {
+                "description": "SellerIncomeReport",
+                "tags": [
+                    "reports"
+                ],
+                "summary": "SellerIncomeReport",
+                "responses": {}
+            }
+        },
+        "/api/v1/seller/store": {
+            "get": {
+                "description": "GetMyStore",
+                "tags": [
+                    "store"
+                ],
+                "summary": "GetMyStore",
+                "responses": {}
+            },
+            "put": {
+                "description": "UpdateStore",
+                "tags": [
+                    "store"
+                ],
+                "summary": "UpdateStore",
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateStore",
+                "tags": [
+                    "store"
+                ],
+                "summary": "CreateStore",
+                "responses": {}
+            }
+        },
+        "/api/v1/stores/{id}": {
+            "get": {
+                "description": "GetStore",
+                "tags": [
+                    "store"
+                ],
+                "summary": "GetStore",
+                "responses": {}
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

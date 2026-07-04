@@ -14,7 +14,7 @@ client.interceptors.request.use((config) => {
   return config
 })
 
-// Handle 401 — clear token (don't redirect here, let components handle it)
+// Handle 401 - clear token (don't redirect here, let components handle it)
 client.interceptors.response.use(
   (res) => res,
   (err) => {

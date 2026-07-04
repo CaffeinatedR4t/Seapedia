@@ -14,6 +14,10 @@ type StoreRequest struct {
 	Description string `json:"description" binding:"max=500"`
 }
 
+// @Summary CreateStore
+// @Description CreateStore
+// @Tags store
+// @Router /api/v1/seller/store [post]
 func CreateStore(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var req StoreRequest
@@ -47,6 +51,10 @@ func CreateStore(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": store.ID, "name": store.Name, "description": store.Description})
 }
 
+// @Summary GetMyStore
+// @Description GetMyStore
+// @Tags store
+// @Router /api/v1/seller/store [get]
 func GetMyStore(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var store models.Store
@@ -57,6 +65,10 @@ func GetMyStore(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": store.ID, "name": store.Name, "description": store.Description})
 }
 
+// @Summary UpdateStore
+// @Description UpdateStore
+// @Tags store
+// @Router /api/v1/seller/store [put]
 func UpdateStore(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var req StoreRequest
@@ -90,6 +102,10 @@ func UpdateStore(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": store.ID, "name": store.Name, "description": store.Description})
 }
 
+// @Summary GetStore
+// @Description GetStore
+// @Tags store
+// @Router /api/v1/stores/{id} [get]
 func GetStore(c *gin.Context) {
 	id := c.Param("id")
 	var store models.Store
@@ -109,4 +125,13 @@ func GetStore(c *gin.Context) {
 		"description": store.Description,
 		"products":    products,
 	})
+}
+
+func getMyStoreOrAbort(c *gin.Context, userID uint) (*models.Store, bool) {
+	var store models.Store
+	if err := db.DB.Where("seller_id = ?", userID).First(&store).Error; err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "anda belum membuat profil toko"})
+		return nil, false
+	}
+	return &store, true
 }

@@ -37,6 +37,10 @@ func getOrCreateCart(userID uint) (*models.Cart, error) {
 	return &cart, nil
 }
 
+// @Summary GetCart
+// @Description GetCart
+// @Tags buyer_cart
+// @Router /api/v1/buyer/cart [get]
 func GetCart(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	cart, err := getOrCreateCart(claims.UserID)
@@ -48,6 +52,10 @@ func GetCart(c *gin.Context) {
 	c.JSON(http.StatusOK, cartToJSON(cart))
 }
 
+// @Summary AddToCart
+// @Description AddToCart
+// @Tags buyer_cart
+// @Router /api/v1/buyer/cart [post]
 func AddToCart(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	var req CartRequest
@@ -115,7 +123,7 @@ func AddToCart(c *gin.Context) {
 
 	if err != nil {
 		if err == gorm.ErrInvalidData {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "keranjang hanya boleh berisi produk dari satu toko yang sama. Kosongkan keranjang terlebih dahulu."})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Keranjang hanya boleh berisi produk dari 1 toko yang sama. Kosongkan keranjang terlebih dahulu."})
 			return
 		}
 		if err == gorm.ErrInvalidValue {
@@ -129,6 +137,10 @@ func AddToCart(c *gin.Context) {
 	GetCart(c) // Return updated cart
 }
 
+// @Summary UpdateCartItem
+// @Description UpdateCartItem
+// @Tags buyer_cart
+// @Router /api/v1/buyer/cart/{itemId} [put]
 func UpdateCartItem(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	itemIdStr := c.Param("itemId")
@@ -170,6 +182,10 @@ func UpdateCartItem(c *gin.Context) {
 	GetCart(c)
 }
 
+// @Summary DeleteCartItem
+// @Description DeleteCartItem
+// @Tags buyer_cart
+// @Router /api/v1/buyer/cart/{itemId} [delete]
 func DeleteCartItem(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	itemIdStr := c.Param("itemId")

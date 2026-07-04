@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { ShoppingCart, Frown, Store, Image as ImageIcon, Trash2, Minus, Plus } from 'lucide-react'
 import BuyerSidebar from '../../../components/BuyerSidebar'
 import client from '../../../api/client'
 import LoadingSpinner from '../../../components/LoadingSpinner'
@@ -7,41 +8,25 @@ import LoadingSpinner from '../../../components/LoadingSpinner'
 const formatRupiah = (price) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price)
 
-const DELIVERY = [
-  { id: 'Instant',  label: 'Instant',  desc: 'Pengiriman hari ini', fee: 15000,  icon: '⚡' },
-  { id: 'Next Day', label: 'Next Day', desc: 'Tiba besok',          fee: 10000,  icon: '📦' },
-  { id: 'Regular',  label: 'Regular',  desc: 'Tiba 3-5 hari',       fee: 5000,   icon: '🚚' },
-]
-
 export default function CartPage() {
   const navigate = useNavigate()
   const [cart, setCart] = useState(null)
-  const [wallet, setWallet] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  
-  const [selectedDelivery, setSelectedDelivery] = useState('Regular')
-  const [checkingOut, setCheckingOut] = useState(false)
-  const [voucherCode, setVoucherCode] = useState('')
-  const [appliedVoucher, setAppliedVoucher] = useState(null)
 
-  const fetchCartAndWallet = async () => {
+  const fetchCart = async () => {
     try {
-      const [cartRes, walletRes] = await Promise.all([
-        client.get('/buyer/cart'),
-        client.get('/buyer/wallet')
-      ])
-      setCart(cartRes.data)
-      setWallet(walletRes.data)
+      const res = await client.get('/buyer/cart')
+      setCart(res.data)
     } catch (err) {
-      setError('Gagal memuat keranjang atau dompet')
+      setError('Gagal memuat keranjang.')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchCartAndWallet()
+    fetchCart()
   }, [])
 
   const updateQuantity = async (itemId, newQty) => {
@@ -63,47 +48,24 @@ export default function CartPage() {
     }
   }
 
-  const handleCheckout = async () => {
-    setCheckingOut(true)
-    setError('')
-    try {
-      await client.post('/buyer/checkout', { 
-        delivery_method: selectedDelivery,
-        voucher_code: appliedVoucher || ''
-      })
-      navigate('/buyer/orders', { state: { message: 'Checkout berhasil!' } })
-    } catch (err) {
-      setError(err.response?.data?.error || 'Checkout gagal')
-      setCheckingOut(false)
-    }
-  }
+  if (loading) return <div className="flex bg-paper-50 min-h-screen"><BuyerSidebar /><main className="flex-1 p-8"><LoadingSpinner /></main></div>
 
-  if (loading) return <div className="flex bg-sky-50 min-h-screen"><BuyerSidebar /><main className="flex-1 p-8"><LoadingSpinner /></main></div>
-
-  const delivery = DELIVERY.find(d => d.id === selectedDelivery)
-  const subtotal = cart?.subtotal || 0
-  const tax = Math.round((subtotal + delivery.fee) * 0.12) // Note: Real calc might apply discount first, let's keep it simple for UI or assume 0 discount for now unless computed by backend
-  // Actually, to make UI accurate, we should ideally fetch discount from backend.
-  // For simplicity since the backend calculates it perfectly, we just show a dummy or leave it to backend. 
-  // Let's add a dummy discount UI if appliedVoucher is set.
-  const discountDisplay = appliedVoucher ? 'Lihat di detail pesanan' : '-'
-  const total = subtotal + delivery.fee + tax
-  const canAfford = wallet?.balance >= total // Approximation since discount reduces total
   const hasItems = cart?.items?.length > 0
+  const subtotal = cart?.subtotal || 0
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] bg-sky-50">
+    <div className="flex min-h-[calc(100vh-64px)] bg-paper-50">
       <BuyerSidebar />
-      <main className="flex-1 p-8 max-w-7xl mx-auto w-full">
-        <h1 className="text-2xl font-bold text-slate-900 mb-6">🛒 Keranjang Belanja</h1>
+      <main className="flex-1 p-8 max-w-5xl mx-auto w-full">
+        <h1 className="text-2xl font-bold text-ink-900 mb-6 flex items-center gap-2"><ShoppingCart className="text-coral-600" /> Keranjang Belanja</h1>
 
-        {error && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl">{error}</div>}
+        {error && <div className="mb-6 p-4 bg-error/10 text-error rounded-xl">{error}</div>}
 
         {!hasItems ? (
-          <div className="card p-16 text-center">
-            <span className="text-6xl mb-4 block">🏝️</span>
-            <h2 className="text-xl font-bold text-slate-800 mb-2">Keranjang Kosong</h2>
-            <p className="text-slate-500 mb-6">Belum ada barang di keranjangmu.</p>
+          <div className="card p-16 text-center flex flex-col items-center">
+            <Frown size={64} className="text-ink-400 mb-4" />
+            <h2 className="text-xl font-bold text-ink-900 mb-2">Keranjang Kosong</h2>
+            <p className="text-ink-500 mb-6">Belum ada barang di keranjangmu.</p>
             <Link to="/products" className="btn-md btn-primary">Mulai Belanja</Link>
           </div>
         ) : (
@@ -111,114 +73,53 @@ export default function CartPage() {
             
             {/* Left: Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="card p-4 flex items-center gap-2 text-sky-700 bg-sky-50 border-sky-200">
-                <span>🏪</span> <span className="font-bold">{cart.store?.name}</span>
+              <div className="card p-4 flex items-center gap-2 text-ink-900 bg-paper-100 border-paper-200">
+                <Store size={18} className="text-coral-600" /> <span className="font-bold">{cart.store?.name}</span>
               </div>
               
-              <div className="card divide-y divide-slate-100">
+              <div className="card divide-y divide-paper-200">
                 {cart.items.map(item => (
                   <div key={item.id} className="p-4 flex gap-4">
-                    <div className="w-20 h-20 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-20 bg-paper-200 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
                       {item.product.image_url ? (
                         <img src={item.product.image_url} alt={item.product.name} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-sky-400 to-cyan-400 flex items-center justify-center text-2xl">🐠</div>
+                        <ImageIcon size={32} className="text-ink-400" />
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-slate-800 line-clamp-1">{item.product.name}</h3>
-                      <p className="text-sky-600 font-bold mt-1">{formatRupiah(item.product.price)}</p>
+                      <h3 className="font-semibold text-ink-900 line-clamp-1">{item.product.name}</h3>
+                      <p className="text-coral-600 font-bold mt-1">{formatRupiah(item.product.price)}</p>
                       
                       <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center gap-3 bg-slate-50 rounded-lg p-1 border border-slate-200 w-fit">
-                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm text-slate-600 hover:text-sky-600">-</button>
-                          <span className="w-4 text-center font-medium text-sm">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-8 h-8 flex items-center justify-center rounded bg-white shadow-sm text-slate-600 hover:text-sky-600">+</button>
+                        <div className="flex items-center gap-3 bg-paper-50 rounded-lg p-1 border border-paper-200 w-fit">
+                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-8 h-8 flex items-center justify-center rounded bg-paper-100 shadow-sm text-ink-700 hover:text-coral-600"><Minus size={14} /></button>
+                          <span className="w-4 text-center font-medium text-sm text-ink-900">{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-8 h-8 flex items-center justify-center rounded bg-paper-100 shadow-sm text-ink-700 hover:text-coral-600"><Plus size={14} /></button>
                         </div>
-                        <button onClick={() => removeItem(item.id)} className="text-sm text-red-500 hover:text-red-700 font-medium">Hapus</button>
+                        <button onClick={() => removeItem(item.id)} className="text-sm text-error hover:text-error/80 font-medium flex items-center gap-1"><Trash2 size={16} /> Hapus</button>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-
-              {/* Delivery Methods */}
-              <div className="card p-6">
-                <h3 className="font-bold text-slate-800 mb-4">Pilih Pengiriman</h3>
-                <div className="grid sm:grid-cols-3 gap-3">
-                  {DELIVERY.map(d => (
-                    <button key={d.id} onClick={() => setSelectedDelivery(d.id)}
-                      className={`p-4 rounded-xl border-2 text-left transition-all ${selectedDelivery === d.id ? 'border-sky-500 bg-sky-50' : 'border-slate-100 bg-white hover:border-sky-300'}`}
-                    >
-                      <div className="text-2xl mb-2">{d.icon}</div>
-                      <div className={`font-semibold ${selectedDelivery === d.id ? 'text-sky-700' : 'text-slate-700'}`}>{d.label}</div>
-                      <div className="text-xs text-slate-500 mt-1">{d.desc}</div>
-                      <div className="text-sm font-medium mt-2">{formatRupiah(d.fee)}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
 
-            {/* Right: Checkout Summary */}
+            {/* Right: Summary */}
             <div className="card p-6 sticky top-24">
-              <h3 className="font-bold text-slate-800 mb-4">Ringkasan Belanja</h3>
-
-              <div className="mb-4 flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder="Kode Voucher" 
-                  value={voucherCode} 
-                  onChange={e => setVoucherCode(e.target.value)} 
-                  className="input-field text-sm"
-                  disabled={appliedVoucher !== null}
-                />
-                {!appliedVoucher ? (
-                  <button onClick={() => setAppliedVoucher(voucherCode)} className="btn-sm btn-primary shrink-0">Pakai</button>
-                ) : (
-                  <button onClick={() => { setAppliedVoucher(null); setVoucherCode('') }} className="btn-sm btn-outline text-red-500 shrink-0">Hapus</button>
-                )}
-              </div>
+              <h3 className="font-bold text-ink-900 mb-4">Ringkasan Belanja</h3>
               
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-sm text-slate-600">
+                <div className="flex justify-between text-sm text-ink-700">
                   <span>Subtotal produk</span><span>{formatRupiah(subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-sm text-slate-600">
-                  <span>Biaya pengiriman</span><span>{formatRupiah(delivery.fee)}</span>
-                </div>
-                {appliedVoucher && (
-                  <div className="flex justify-between text-sm text-emerald-600">
-                    <span>Voucher</span><span>Akan dihitung</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-sm text-slate-600">
-                  <span>PPN 12%</span><span>{formatRupiah(tax)}</span>
-                </div>
-                <div className="border-t border-slate-100 pt-3 flex justify-between items-center">
-                  <span className="font-bold text-slate-800">Total Tagihan</span>
-                  <span className="text-xl font-extrabold text-sky-700">{formatRupiah(total)}</span>
-                </div>
-              </div>
-
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs font-medium text-slate-500">Saldo SEAPEDIA Pay</span>
-                  <span className={`text-sm font-bold ${canAfford ? 'text-emerald-600' : 'text-red-500'}`}>
-                    {formatRupiah(wallet?.balance || 0)}
-                  </span>
-                </div>
-                {!canAfford && (
-                  <p className="text-xs text-red-500 mt-1">Saldo tidak mencukupi. <Link to="/buyer/wallet" className="underline">Top up sekarang</Link></p>
-                )}
               </div>
 
               <button 
-                onClick={handleCheckout} 
-                disabled={!canAfford || checkingOut} 
+                onClick={() => navigate('/buyer/checkout')}
                 className="btn-lg btn-primary w-full"
               >
-                {checkingOut ? <LoadingSpinner size="sm" /> : 'Bayar Sekarang'}
+                Lanjut ke Checkout
               </button>
             </div>
 

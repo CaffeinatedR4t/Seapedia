@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { Store as StoreIcon } from 'lucide-react'
 import BuyerSidebar from '../../../components/BuyerSidebar'
 import client from '../../../api/client'
 import LoadingSpinner from '../../../components/LoadingSpinner'
@@ -64,8 +65,8 @@ export default function OrderDetailPage() {
             
             {/* Store & Items */}
             <div className="card p-0 overflow-hidden">
-              <div className="bg-slate-50 p-4 border-b border-slate-100 font-bold text-slate-800">
-                🏪 {order.store_name}
+              <div className="bg-slate-50 p-4 border-b border-slate-100 font-bold text-slate-800 flex items-center gap-2">
+                <StoreIcon size={18} className="text-coral-600" /> {order.store_name}
               </div>
               <div className="divide-y divide-slate-100">
                 {order.items?.map(item => (

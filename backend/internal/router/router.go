@@ -2,13 +2,18 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
+	_ "seapedia/docs"
 	"seapedia/internal/handlers"
 	"seapedia/internal/middleware"
 )
 
 func Setup(r *gin.Engine) {
 	r.Use(corsMiddleware())
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	v1 := r.Group("/api/v1")
 
@@ -43,8 +48,7 @@ func Setup(r *gin.Engine) {
 		seller.GET("/orders", handlers.ListSellerOrders)
 		seller.PUT("/orders/:id/status", handlers.UpdateSellerOrderStatus)
 
-		seller.GET("/vouchers", handlers.ListVouchers)
-		seller.POST("/vouchers", handlers.CreateVoucher)
+		seller.GET("/report/income", handlers.SellerIncomeReport)
 	}
 	buyer := v1.Group("/buyer", middleware.AuthMiddleware(), middleware.RequireRole("buyer"))
 	{
@@ -64,11 +68,14 @@ func Setup(r *gin.Engine) {
 		buyer.POST("/checkout", handlers.Checkout)
 		buyer.GET("/orders", handlers.ListBuyerOrders)
 		buyer.GET("/orders/:id", handlers.GetBuyerOrder)
+		
+		buyer.GET("/report/spending", handlers.BuyerSpendingReport)
 	}
 	driver := v1.Group("/driver", middleware.AuthMiddleware(), middleware.RequireRole("driver"))
 	{
 		driver.GET("/orders/available", handlers.ListAvailableOrders)
 		driver.GET("/orders/active", handlers.ListActiveOrders)
+		driver.GET("/orders/history", handlers.JobHistory)
 		driver.PUT("/orders/:id/pickup", handlers.PickupOrder)
 		driver.PUT("/orders/:id/finish", handlers.FinishOrder)
 		driver.GET("/earnings", handlers.DriverEarnings)
@@ -78,6 +85,10 @@ func Setup(r *gin.Engine) {
 		admin.GET("/stats", handlers.AdminStats)
 		admin.GET("/promos", handlers.ListPromos)
 		admin.POST("/promos", handlers.CreatePromo)
+		admin.GET("/promos/:id", handlers.GetPromo)
+		admin.GET("/vouchers", handlers.ListVouchers)
+		admin.POST("/vouchers", handlers.CreateVoucher)
+		admin.GET("/vouchers/:id", handlers.GetVoucher)
 		admin.POST("/simulate-overdue", handlers.SimulateOverdue)
 	}
 }

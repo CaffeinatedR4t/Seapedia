@@ -15,6 +15,10 @@ type UpdateOrderStatusRequest struct {
 	Status string `json:"status" binding:"required"`
 }
 
+// @Summary UpdateSellerOrderStatus
+// @Description UpdateSellerOrderStatus
+// @Tags seller_order
+// @Router /api/v1/seller/orders/{id}/status [put]
 func UpdateSellerOrderStatus(c *gin.Context) {
 	claims := middleware.GetClaims(c)
 	store, ok := getMyStoreOrAbort(c, claims.UserID)

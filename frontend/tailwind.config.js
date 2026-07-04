@@ -6,9 +6,28 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+      colors: {
+        ink: { 900: '#1B2430', 700: '#2E3A4A', 500: '#5C6B7A' },
+        paper: { 50: '#FBF7F1', 100: '#F3ECE1', 200: '#E8DDCC' },
+        coral: { 100: '#FBE2D4', 600: '#D9633B', 700: '#B84E2C' },
+        gold: { 500: '#D9A441' },
+        status: {
+          packing: '#D9A441',
+          waiting: '#4C7A92',
+          shipping: '#D9633B',
+          done: '#4A7C59',
+          returned: '#A3443A',
+        },
+        success: '#4A7C59',
+        error: '#B3392C',
+        warning: '#C7862B',
+        info: '#4C7A92',
       },
+      fontFamily: {
+        display: ['Fraunces', 'ui-serif', 'serif'],
+        body: ['"Public Sans"', 'ui-sans-serif', 'sans-serif'],
+      },
+      borderRadius: { sm: '4px', md: '8px', lg: '16px', full: '999px' },
       animation: {
         'float': 'float 3s ease-in-out infinite',
         'float-delay': 'float 3s ease-in-out 1s infinite',

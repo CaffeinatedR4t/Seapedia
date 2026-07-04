@@ -17,7 +17,7 @@ export default function StarRating({ rating = 0, interactive = false, onChange, 
           className={`
             ${cls} leading-none transition-transform duration-100
             ${interactive ? 'cursor-pointer hover:scale-125 active:scale-110' : 'cursor-default'}
-            ${star <= rating ? 'text-amber-400' : 'text-slate-200'}
+            ${star <= rating ? 'text-gold-500' : 'text-slate-300'}
           `}
           aria-label={`${star} star`}
         >

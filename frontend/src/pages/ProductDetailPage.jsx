@@ -3,15 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { useAuth } from '../context/AuthContext'
+import { Search, Fish, Store, AlertTriangle, Check, ShoppingCart, Lightbulb, Minus, Plus } from 'lucide-react'
 
 const formatRupiah = (price) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price)
-
-const DELIVERY = [
-  { id: 'Instant',  label: 'Instant',  desc: 'Pengiriman hari ini', fee: 15000,  icon: '⚡' },
-  { id: 'Next Day', label: 'Next Day', desc: 'Tiba besok',          fee: 10000,  icon: '📦' },
-  { id: 'Regular',  label: 'Regular',  desc: 'Tiba 3-5 hari',       fee: 5000,   icon: '🚚' },
-]
 
 export default function ProductDetailPage() {
   const { id } = useParams()
@@ -20,8 +15,8 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [selectedDelivery, setSelectedDelivery] = useState('Regular')
   const [qty, setQty] = useState(1)
+  const [addingToCart, setAddingToCart] = useState(false)
 
   useEffect(() => {
     client.get(`/products/${id}`)
@@ -30,35 +25,46 @@ export default function ProductDetailPage() {
       .finally(() => setLoading(false))
   }, [id])
 
+  const handleAddToCart = async () => {
+    setAddingToCart(true)
+    try {
+      await client.post('/buyer/cart', { product_id: product.id, quantity: qty })
+      navigate('/buyer/cart')
+    } catch (err) {
+      if (err.response?.data?.error === 'single-store') {
+        alert('Tidak bisa menambah produk dari toko berbeda. Selesaikan atau hapus keranjang Anda terlebih dahulu.')
+      } else {
+        alert(err.response?.data?.error || 'Gagal menambahkan ke keranjang')
+      }
+    } finally {
+      setAddingToCart(false)
+    }
+  }
+
   if (loading) return <LoadingSpinner fullScreen />
   if (error || !product) return (
-    <div className="min-h-screen flex items-center justify-center bg-sky-50">
+    <div className="min-h-screen flex items-center justify-center bg-paper-50">
       <div className="text-center">
-        <div className="text-6xl mb-4">🔍</div>
-        <h2 className="text-xl font-bold text-slate-700 mb-2">{error || 'Produk tidak ditemukan'}</h2>
+        <Search size={64} className="mx-auto mb-4 text-ink-300" />
+        <h2 className="text-xl font-bold text-ink-700 mb-2">{error || 'Produk tidak ditemukan'}</h2>
         <Link to="/products" className="btn-md btn-primary mt-4 inline-flex">Kembali ke Produk</Link>
       </div>
     </div>
   )
 
-  const delivery = DELIVERY.find(d => d.id === selectedDelivery)
   const subtotal = product.price * qty
-  const tax = Math.round((subtotal + delivery.fee) * 0.12)
-  const total = subtotal + delivery.fee + tax
-
-  const gradients = ['from-sky-400 to-cyan-400', 'from-blue-400 to-sky-500', 'from-teal-400 to-emerald-400']
-  const gradient = gradients[product.id % gradients.length]
+  const gradient = 'bg-ink-100'
 
   return (
-    <div className="min-h-screen bg-sky-50">
+    <div className="min-h-screen bg-paper-50">
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-sky-100 px-4 py-3">
-        <div className="max-w-7xl mx-auto text-sm text-slate-500 flex items-center gap-2">
-          <Link to="/" className="hover:text-sky-600">Beranda</Link>
+      <div className="bg-paper-50 border-b border-paper-200 px-4 py-3">
+        <div className="max-w-7xl mx-auto text-sm text-ink-500 flex items-center gap-2">
+          <Link to="/" className="hover:text-coral-600">Beranda</Link>
           <span>›</span>
-          <Link to="/products" className="hover:text-sky-600">Produk</Link>
+          <Link to="/products" className="hover:text-coral-600">Produk</Link>
           <span>›</span>
-          <span className="text-slate-800 font-medium truncate max-w-xs">{product.name}</span>
+          <span className="text-ink-900 font-medium truncate max-w-xs">{product.name}</span>
         </div>
       </div>
 
@@ -66,12 +72,12 @@ export default function ProductDetailPage() {
         <div className="grid lg:grid-cols-2 gap-10">
           {/* Left: Image */}
           <div>
-            <div className="card overflow-hidden aspect-square">
+            <div className="card overflow-hidden aspect-square border-paper-200">
               {product.image_url ? (
                 <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
               ) : (
-                <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-                  <span className="text-8xl">🐠</span>
+                <div className={`w-full h-full ${gradient} flex items-center justify-center`}>
+                  <Fish size={96} className="text-ink-300" />
                 </div>
               )}
             </div>
@@ -81,89 +87,72 @@ export default function ProductDetailPage() {
           <div className="space-y-6">
             {/* Store */}
             <div className="flex items-center gap-2">
-              <span className="badge bg-sky-100 text-sky-700">🏪 {product.store?.name || 'SEAPEDIA Store'}</span>
+              <span className="badge bg-coral-600/10 text-coral-600 flex items-center gap-1"><Store size={14} /> {product.store?.name || 'SEAPEDIA Store'}</span>
             </div>
 
             {/* Name + Price */}
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">{product.name}</h1>
-              <p className="text-3xl font-extrabold text-sky-700">{formatRupiah(product.price)}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-ink-900 mb-3">{product.name}</h1>
+              <p className="text-3xl font-extrabold text-coral-600">{formatRupiah(product.price)}</p>
             </div>
 
             {/* Stock */}
             <div>
               {product.stock === 0 ? (
-                <span className="badge bg-red-100 text-red-700 text-sm py-1">Stok Habis</span>
+                <span className="badge bg-error/10 text-error text-sm py-1">Stok Habis</span>
               ) : product.stock <= 5 ? (
-                <span className="badge bg-amber-100 text-amber-700 text-sm py-1">⚠ Stok terbatas: {product.stock}</span>
+                <span className="badge bg-gold-500/10 text-gold-500 text-sm py-1 flex items-center gap-1 w-fit"><AlertTriangle size={14} /> Stok terbatas: {product.stock}</span>
               ) : (
-                <span className="badge bg-emerald-100 text-emerald-700 text-sm py-1">✓ Stok: {product.stock}</span>
+                <span className="badge bg-success/10 text-success text-sm py-1 flex items-center gap-1 w-fit"><Check size={14} /> Stok: {product.stock}</span>
               )}
             </div>
 
             {/* Description */}
-            <div className="card p-4">
-              <h3 className="font-semibold text-slate-700 mb-2">Deskripsi Produk</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">{product.description}</p>
+            <div className="card p-4 border-paper-200">
+              <h3 className="font-semibold text-ink-700 mb-2">Deskripsi Produk</h3>
+              <p className="text-ink-600 text-sm leading-relaxed">{product.description}</p>
             </div>
 
-            {/* Delivery Method */}
-            <div>
-              <h3 className="font-semibold text-slate-700 mb-3">Metode Pengiriman</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {DELIVERY.map(d => (
-                  <button
-                    key={d.id}
-                    onClick={() => setSelectedDelivery(d.id)}
-                    className={`p-3 rounded-xl border-2 text-center transition-all ${
-                      selectedDelivery === d.id
-                        ? 'border-sky-500 bg-sky-50 text-sky-700'
-                        : 'border-sky-100 bg-white text-slate-600 hover:border-sky-300'
-                    }`}
-                  >
-                    <div className="text-xl mb-1">{d.icon}</div>
-                    <div className="font-semibold text-xs">{d.label}</div>
-                    <div className="text-xs text-slate-500">{formatRupiah(d.fee)}</div>
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-slate-500 mt-2">📍 {delivery?.desc}</p>
-            </div>
+            {/* Quantity & CTA */}
+            <div className="card p-4 space-y-4 border-paper-200 bg-paper-100">
+              {isAuthenticated && activeRole === 'buyer' && product.stock > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-ink-700 text-sm">Atur Jumlah</span>
+                  <div className="flex items-center gap-3 bg-paper-50 rounded-lg p-1 border border-paper-200 w-fit">
+                    <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-8 h-8 flex items-center justify-center rounded bg-paper-100 shadow-sm text-ink-700 hover:text-coral-600"><Minus size={14} /></button>
+                    <span className="w-6 text-center font-bold text-sm text-ink-900">{qty}</span>
+                    <button onClick={() => setQty(Math.min(product.stock, qty + 1))} className="w-8 h-8 flex items-center justify-center rounded bg-paper-100 shadow-sm text-ink-700 hover:text-coral-600"><Plus size={14} /></button>
+                  </div>
+                </div>
+              )}
 
-            {/* Price Summary */}
-            <div className="card p-4 space-y-2 bg-sky-50">
-              <div className="flex justify-between text-sm text-slate-600">
-                <span>Subtotal ({qty} item)</span><span>{formatRupiah(subtotal)}</span>
+              <div className="flex justify-between font-bold text-ink-900 border-t border-paper-200 pt-3">
+                <span>Subtotal</span><span className="text-coral-600 text-lg">{formatRupiah(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-sm text-slate-600">
-                <span>Biaya kirim ({delivery?.label})</span><span>{formatRupiah(delivery?.fee || 0)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-slate-600">
-                <span>PPN 12%</span><span>{formatRupiah(tax)}</span>
-              </div>
-              <div className="flex justify-between font-bold text-slate-800 border-t border-sky-200 pt-2">
-                <span>Total</span><span className="text-sky-700 text-lg">{formatRupiah(total)}</span>
-              </div>
-            </div>
 
-            {/* CTA */}
-            {isAuthenticated && activeRole === 'buyer' ? (
-              <button className="btn-lg btn-primary w-full" disabled={product.stock === 0}>
-                {product.stock === 0 ? 'Stok Habis' : '🛒 Tambah ke Keranjang'} 
-              </button>
-            ) : (
-              <div className="space-y-2">
-                <button disabled className="btn-lg btn-primary w-full opacity-60 cursor-not-allowed">
-                  🛒 Tambah ke Keranjang
+              {isAuthenticated && activeRole === 'buyer' ? (
+                <button 
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0 || addingToCart} 
+                  className="btn-lg btn-primary w-full flex justify-center items-center gap-2"
+                >
+                  {addingToCart ? <LoadingSpinner size="sm" /> : product.stock === 0 ? 'Stok Habis' : <><ShoppingCart size={18} /> Tambah ke Keranjang</>} 
                 </button>
-                <p className="text-xs text-slate-500 text-center">
-                  {isAuthenticated
-                    ? '💡 Aktifkan peran Pembeli untuk berbelanja'
-                    : <><Link to="/login" className="text-sky-600 hover:underline">Masuk</Link> atau <Link to="/register" className="text-sky-600 hover:underline">Daftar</Link> sebagai Pembeli untuk checkout</>
-                  }
-                </p>
-              </div>
-            )}
+              ) : (
+                <div className="space-y-2">
+                  <button disabled className="btn-lg btn-primary w-full opacity-60 cursor-not-allowed flex justify-center items-center gap-2">
+                    <ShoppingCart size={18} /> Tambah ke Keranjang
+                  </button>
+                  <p className="text-xs text-ink-500 text-center flex items-center justify-center gap-1">
+                    {isAuthenticated
+                      ? <><Lightbulb size={14} /> Aktifkan peran Pembeli untuk berbelanja</>
+                      : <>Masuk sebagai Pembeli untuk membeli</>
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
       </div>

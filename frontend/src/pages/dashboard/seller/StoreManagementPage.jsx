@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import SellerSidebar from '../../../components/SellerSidebar'
 import client from '../../../api/client'
 import LoadingSpinner from '../../../components/LoadingSpinner'
+import { Store as StoreIcon } from 'lucide-react'
 
 export default function StoreManagementPage() {
   const [store, setStore] = useState(null)
@@ -51,22 +52,24 @@ export default function StoreManagementPage() {
     }
   }
 
-  if (loading) return <div className="flex bg-sky-50 min-h-screen"><SellerSidebar /><main className="flex-1 p-8"><LoadingSpinner /></main></div>
+  if (loading) return <div className="flex bg-paper-50 min-h-screen"><SellerSidebar /><main className="flex-1 p-8"><LoadingSpinner /></main></div>
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] bg-sky-50">
+    <div className="flex min-h-[calc(100vh-64px)] bg-paper-50">
       <SellerSidebar />
       <main className="flex-1 p-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">🏪 {store ? 'Kelola Toko' : 'Buat Toko'}</h1>
-        <p className="text-slate-500 mb-8">{store ? 'Perbarui informasi tokomu agar menarik pembeli' : 'Daftarkan tokomu untuk mulai berjualan di SEAPEDIA'}</p>
+        <h1 className="text-2xl font-bold text-ink-900 mb-2 flex items-center gap-2">
+          <StoreIcon className="text-coral-600" /> {store ? 'Kelola Toko' : 'Buat Toko'}
+        </h1>
+        <p className="text-ink-500 mb-8">{store ? 'Perbarui informasi tokomu agar menarik pembeli' : 'Daftarkan tokomu untuk mulai berjualan di SEAPEDIA'}</p>
 
         <div className="card p-6 max-w-2xl">
-          {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">{error}</div>}
-          {success && <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-lg text-sm">{success}</div>}
+          {error && <div className="mb-4 p-3 bg-error/10 border border-error/20 text-error rounded-lg text-sm">{error}</div>}
+          {success && <div className="mb-4 p-3 bg-success/10 border border-success/20 text-success rounded-lg text-sm">{success}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Nama Toko</label>
+              <label className="label">Nama Toko</label>
               <input
                 name="name"
                 value={formData.name}
@@ -77,11 +80,11 @@ export default function StoreManagementPage() {
                 minLength={3}
                 maxLength={100}
               />
-              <p className="text-xs text-slate-500 mt-1">Nama toko harus unik dan belum digunakan seller lain.</p>
+              <p className="text-xs text-ink-500 mt-1">Nama toko harus unik dan belum digunakan seller lain.</p>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Deskripsi</label>
+              <label className="label">Deskripsi</label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -92,7 +95,7 @@ export default function StoreManagementPage() {
               />
             </div>
 
-            <button type="submit" disabled={saving} className="btn-lg btn-primary bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20 w-full mt-4">
+            <button type="submit" disabled={saving} className="btn-lg btn-primary w-full mt-4">
               {saving ? <LoadingSpinner size="sm" /> : (store ? 'Simpan Perubahan' : 'Buat Toko Sekarang')}
             </button>
           </form>
