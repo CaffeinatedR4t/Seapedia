@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Waves, Book, Camera, Twitter, Youtube, ShoppingCart, Store, Truck } from 'lucide-react'
+import { Waves, Book, Camera, MessageCircle, Tv, ShoppingCart, Store, Truck } from 'lucide-react'
 
 export default function Footer() {
   const location = useLocation()
@@ -27,7 +27,7 @@ export default function Footer() {
               Marketplace laut terlengkap di Indonesia. Temukan semua yang kamu butuhkan untuk petualangan laut.
             </p>
             <div className="flex gap-3 mt-4">
-              {[<Book size={16} />, <Camera size={16} />, <Twitter size={16} />, <Youtube size={16} />].map((icon, i) => (
+              {[<Book size={16} />, <Camera size={16} />, <MessageCircle size={16} />, <Tv size={16} />].map((icon, i) => (
                 <button key={i} className="w-8 h-8 rounded-full bg-ink-700 hover:bg-ink-500 flex items-center justify-center text-paper-100 transition-colors">
                   {icon}
                 </button>
